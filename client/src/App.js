@@ -1,19 +1,27 @@
 import React from 'react';
-import './styles/App.css';
+import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CustomNavbar from './components/navbar';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+//import EventManagement from '.pages/EventManagement';
+//import Home from './pages/Home';
+import Login from './pages/Login';
 
 
 
 function App() {
   return (
-    <div className="App">
-      <header id = "Navbar"> 
-         <CustomNavbar/>
-      </header>
-      <h1>Volunteering Website</h1>
-    </div>
+    <Router>
+      <div className="App">
+        <CustomNavbar />
+        <h1>Volunteering Website</h1>
+
+        <Routes>
+          <Route path="/login" element={<Login/>} />
+        </Routes>
+
+      </div>
+    </Router>
   );
 }
 
