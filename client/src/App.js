@@ -1,9 +1,9 @@
 import React from 'react';
-import './App.css';
+import './styles/App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-import Navbar from './components/navbar';
 import CustomNavbar from './components/navbar';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 
 
 function App() {
