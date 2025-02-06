@@ -15,6 +15,11 @@ const CustomNavbar = () => {
                     <Nav className="ml-auto">
                         <Nav.Link as={Link} to="/home">Home</Nav.Link>
                         <Nav.Link as={Link} to="/login">Login</Nav.Link>
+                        <Nav.Link as={Link} to="/eventManagement">Event Management</Nav.Link>
+                        <Nav.Link as={Link} to="/notifications">Notifications</Nav.Link>
+                        <Nav.Link as={Link} to="/userProfile">Profile</Nav.Link>
+                        <Nav.Link as={Link} to="/volunteerHistory">Volunteer History</Nav.Link>
+                        <Nav.Link as={Link} to="/volunteer">Volunteer</Nav.Link>
                         <NavDropdown title="Dropdown" id="basic-nav-dropdown">
                             <NavDropdown.Item as={Link} to="/action1">Action</NavDropdown.Item>
                             <NavDropdown.Item as={Link} to="/action2">Another action</NavDropdown.Item>
