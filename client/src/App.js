@@ -11,6 +11,7 @@ import Register from './pages/Register';
 import UserProfile from './pages/UserProfile';
 import VolunteerHistory from './pages/VolunteerHistory';
 import VolunteerMatching from './pages/VolunteerMatching';
+import Events from './pages/Events';
 
 
 function App() {
@@ -26,7 +27,8 @@ function App() {
           <Route path="/register" element={<Register/>} />
           <Route path="/userProfile" element={<UserProfile/>} />
           <Route path="/volunteerHistory" element={<VolunteerHistory/>} />
-          <Route path="/volunteer" element={<VolunteerMatching/>} />
+          <Route path="/volunteerMatchingForm" element={<VolunteerMatching/>} />
+          <Route path="/events" element={<Events/>} />
         </Routes>
 
       </div>

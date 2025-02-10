@@ -1,69 +1,106 @@
 import React, { useState } from 'react';
-import { Button, Container, Card, Row, Col, Badge } from 'react-bootstrap';
+import { Button, Container, Card, Row, Col, Badge, Form, Alert } from 'react-bootstrap';
 
 const VolunteerMatching = () => {
-  const [events, setEvents] = useState([
-    { id: 1, name: 'Community Cleanup', skills: ['Organization', 'Teamwork'], description: 'Join us in cleaning up the local park and keeping our community clean.', location: 'Central Park', date: 'March 15, 2025', time: '10:00 AM - 2:00 PM' },
-    { id: 2, name: 'Food Bank Assistance', skills: ['Cooking', 'Logistics'], description: 'Help sort and distribute food to families in need at the food bank.', location: 'Houston Food Bank', date: 'March 20, 2025', time: '9:00 AM - 12:00 PM' },
-    { id: 3, name: 'Tutoring Program', skills: ['Teaching', 'Patience'], description: 'Tutor students in math and reading to help them succeed academically.', location: 'Local Library', date: 'March 25, 2025', time: '4:00 PM - 6:00 PM' },
-    { id: 4, name: 'Animal Shelter Help', skills: ['Animal Care', 'Compassion'], description: 'Assist in caring for and socializing shelter animals to prepare them for adoption.', location: 'City Animal Shelter', date: 'March 30, 2025', time: '1:00 PM - 4:00 PM' },
+  const [volunteers, setVolunteers] = useState([
+    { 
+      id: 1, 
+      name: 'Alice Johnson', 
+      skills: ['Organization', 'Teamwork'], 
+      matchedEvents: [
+        { name: 'Community Cleanup', location: 'Central Park', date: 'March 15, 2025', time: '10:00 AM - 2:00 PM', skills: ['Organization', 'Teamwork'], description: 'Join us in cleaning up the local park and keeping our community clean.' },
+        { name: 'Beach Cleanup', location: 'Santa Monica Beach', date: 'April 10, 2025', time: '9:00 AM - 1:00 PM', skills: ['Teamwork'], description: 'Help us remove trash and protect marine life at Santa Monica Beach.' }
+      ]
+    },
+    { 
+      id: 2, 
+      name: 'Bob Smith', 
+      skills: ['Cooking', 'Logistics'], 
+      matchedEvents: [
+        { name: 'Food Bank Assistance', location: 'Houston Food Bank', date: 'March 20, 2025', time: '9:00 AM - 12:00 PM', skills: ['Logistics'], description: 'Help sort and distribute food to families in need at the food bank.' },
+        { name: 'Soup Kitchen Service', location: 'Downtown Shelter', date: 'April 5, 2025', time: '11:00 AM - 3:00 PM', skills: ['Cooking', 'Logistics'], description: 'Assist in cooking and serving meals to the homeless.' }
+      ]
+    }
   ]);
 
-  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
-
-  const handleEventClick = (event) => {
-    setSelectedEvent(selectedEvent?.id === event.id ? null : event);
-  };
-
-  const handleFilterChange = (skill) => {
-    setSelectedSkills(prev => 
-      prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill]
-    );
-  };
-
-  const filteredEvents = selectedSkills.length > 0
-    ? events.filter(event => selectedSkills.some(skill => event.skills.includes(skill)))
-    : events;
+  const [matchNotification, setMatchNotification] = useState(null);
+  const [searchSkill, setSearchSkill] = useState('');
 
   return (
     <Container className="mt-4">
-      <h2 className="text-center mb-4">Volunteer Matching</h2>
-      <Row className="mb-3 justify-content-center">
-        {['Organization', 'Teamwork', 'Cooking', 'Logistics', 'Teaching', 'Patience', 'Animal Care', 'Compassion'].map(skill => (
-          <Col xs="auto" key={skill} className="mb-2">
-            <Button 
-              style={ selectedSkills.includes(skill) ? { backgroundColor: '#60993E', borderColor: '#8A95A5', color: 'white' } : { backgroundColor: 'white', borderColor: '#8A95A5', color: '#8A95A5' } }
-              className="rounded-pill px-3 py-2"
-              onClick={() => handleFilterChange(skill)}
-            >
-              {skill}
-            </Button>
-          </Col>
-        ))}
-      </Row>
+      <h2 className="text-center mb-4">Volunteer Matching Form</h2>
+      <h3 className="text-center mt-4">Search by Volunteer</h3>
+      {matchNotification && <Alert style={{ backgroundColor: '#deeed5', borderColor: '#deeed5', color: '#4e7d33' }} className="text-center">{matchNotification}</Alert>}
+      <Form>
+        <Form.Group controlId="volunteerSelect" className="mb-3">
+          <Form.Label>Search for Volunteers by Name</Form.Label>
+          <Form.Control as="select" onChange={(e) => setSelectedVolunteer(volunteers.find(v => v.id === parseInt(e.target.value))) }>
+            <option value="">Select a Volunteer</option>
+            {volunteers.map(volunteer => (
+              <option key={volunteer.id} value={volunteer.id}>{volunteer.name}</option>
+            ))}
+          </Form.Control>
+        </Form.Group>
+        {selectedVolunteer && (
+          <Row className="justify-content-center">
+            {selectedVolunteer.matchedEvents.map((event, index) => (
+              <Col md={6} key={index} className="mb-3">
+                <Card>
+                  <Card.Body>
+                    <Card.Title>{event.name}</Card.Title>
+                    <Card.Subtitle className="mb-2 text-muted">{event.location}</Card.Subtitle>
+                    <Card.Text>
+                      <strong>Date:</strong> {event.date} <br />
+                      <strong>Time:</strong> {event.time}
+                    </Card.Text>
+                    <div className="mb-2">
+                      <strong>Matched Skills: </strong> 
+                      {selectedVolunteer.skills.filter(skill => event.skills.includes(skill)).map(skill => (
+                        <Badge key={skill} bg="secondary" className="me-1">{skill}</Badge>
+                      ))}
+                    </div>
+                    <Button className="w-100 mb-2" style={{ backgroundColor: '#2C365e', borderColor: '#8A95A5', color: 'white' }} onClick={() => setSelectedEvent(selectedEvent?.name === event.name ? null : event)}>
+                      {selectedEvent?.name === event.name ? 'Hide Details' : 'View Details'}
+                    </Button>
+                    {selectedEvent?.name === event.name && (
+                      <>
+                        <Card.Text className="mt-2">{event.description}</Card.Text>
+                        <Button className="w-100 mt-2" style={{ backgroundColor: '#60993E', borderColor: '#8A95A5', color: 'white' }} onClick={() => {
+                          setMatchNotification(`${selectedVolunteer.name} has been matched with ${event.name}.`);
+                          setTimeout(() => setMatchNotification(null), 2000);
+                        }}>Match</Button>
+                      </>
+                    )}
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        )}
+      </Form>
+      
+      <h3 className="text-center mt-4">Search by Skill</h3>
+      <Form.Group controlId="skillSearch" className="mb-3">
+        <Form.Label>Search for Volunteers by Skill</Form.Label>
+        <Form.Control type="text" placeholder="Enter skill" value={searchSkill} onChange={(e) => setSearchSkill(e.target.value)} />
+      </Form.Group>
       <Row className="justify-content-center">
-        {filteredEvents.map((event) => (
-          <Col md={6} key={event.id} className="mb-3">
+        {volunteers.filter(volunteer => volunteer.skills.some(skill => skill.toLowerCase().includes(searchSkill.toLowerCase()))).map((volunteer) => (
+          <Col md={6} key={volunteer.id} className="mb-3">
             <Card>
               <Card.Body>
-                <Card.Title>{event.name}</Card.Title>
-                <Card.Subtitle className="mb-2 text-muted">{event.location}</Card.Subtitle>
+                <Card.Title>{volunteer.name}</Card.Title>
                 <Card.Text>
-                  <strong>Date:</strong> {event.date} <br />
-                  <strong>Time:</strong> {event.time}
-                </Card.Text>
-                <div className="mb-2">
-                  {event.skills.map(skill => (
-                    <Badge bg="secondary" key={skill} className="me-1">{skill}</Badge>
+                  <strong>Skills:</strong> {volunteer.skills.map(skill => (
+                    <Badge key={skill} bg="secondary" className="me-1">{skill}</Badge>
                   ))}
-                </div>
-                <Button style={{ backgroundColor: '#2C365e', borderColor: '#8A95A5', color: 'white' }} className="w-100" onClick={() => handleEventClick(event)}>
-                  {selectedEvent?.id === event.id ? 'Hide Details' : 'View Details'}
-                </Button>
-                {selectedEvent?.id === event.id && (
-                  <Card.Text className="mt-2">{event.description}</Card.Text>
-                )}
+                </Card.Text>
+                <Button className="w-100 mt-2" style={{ backgroundColor: '#60993E', borderColor: '#8A95A5', color: 'white' }} onClick={() => {
+                  setMatchNotification(`${volunteer.name} has been matched based on skill search.`);
+                  setTimeout(() => setMatchNotification(null), 2000);
+                }}>Match</Button>
               </Card.Body>
             </Card>
           </Col>
