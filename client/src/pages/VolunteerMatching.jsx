@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Container, Card } from 'react-bootstrap';
+import { Button, Container, Card, Row, Col, Badge } from 'react-bootstrap';
 
 const VolunteerMatching = () => {
   const [events, setEvents] = useState([
@@ -29,39 +29,46 @@ const VolunteerMatching = () => {
   return (
     <Container className="mt-4">
       <h2 className="text-center mb-4">Volunteer Matching</h2>
-      <div className="mb-3 d-flex flex-wrap gap-2">
+      <Row className="mb-3 justify-content-center">
         {['Organization', 'Teamwork', 'Cooking', 'Logistics', 'Teaching', 'Patience', 'Animal Care', 'Compassion'].map(skill => (
-          <Button 
-            key={skill}
-            variant={selectedSkills.includes(skill) ? "primary" : "outline-primary"} 
-            className="skill-button rounded-pill"
-            onClick={() => handleFilterChange(skill)}
-          >
-            {skill}
-          </Button>
-        ))}
-      </div>
-      <div className="d-flex flex-column align-items-center">
-        {filteredEvents.map((event) => (
-          <div key={event.id} className="w-50 mb-3">
-            <Button
-              variant="primary"
-              className="event-button"
-              onClick={() => handleEventClick(event)}
+          <Col xs="auto" key={skill} className="mb-2">
+            <Button 
+              style={ selectedSkills.includes(skill) ? { backgroundColor: '#60993E', borderColor: '#8A95A5', color: 'white' } : { backgroundColor: 'white', borderColor: '#8A95A5', color: '#8A95A5' } }
+              className="rounded-pill px-3 py-2"
+              onClick={() => handleFilterChange(skill)}
             >
-              {event.name}
+              {skill}
             </Button>
-            {selectedEvent?.id === event.id && (
-              <Card className="event-card">
-                <Card.Text><strong>Description:</strong> {event.description}</Card.Text>
-                <Card.Text><strong>Location:</strong> {event.location}</Card.Text>
-                <Card.Text><strong>Date:</strong> {event.date}</Card.Text>
-                <Card.Text><strong>Time:</strong> {event.time}</Card.Text>
-              </Card>
-            )}
-          </div>
+          </Col>
         ))}
-      </div>
+      </Row>
+      <Row className="justify-content-center">
+        {filteredEvents.map((event) => (
+          <Col md={6} key={event.id} className="mb-3">
+            <Card>
+              <Card.Body>
+                <Card.Title>{event.name}</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">{event.location}</Card.Subtitle>
+                <Card.Text>
+                  <strong>Date:</strong> {event.date} <br />
+                  <strong>Time:</strong> {event.time}
+                </Card.Text>
+                <div className="mb-2">
+                  {event.skills.map(skill => (
+                    <Badge bg="secondary" key={skill} className="me-1">{skill}</Badge>
+                  ))}
+                </div>
+                <Button style={{ backgroundColor: '#2C365e', borderColor: '#8A95A5', color: 'white' }} className="w-100" onClick={() => handleEventClick(event)}>
+                  {selectedEvent?.id === event.id ? 'Hide Details' : 'View Details'}
+                </Button>
+                {selectedEvent?.id === event.id && (
+                  <Card.Text className="mt-2">{event.description}</Card.Text>
+                )}
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
     </Container>
   );
 };
