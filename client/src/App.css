@@ -50,3 +50,7 @@ h1, h2, h3, h4, h5, h6, p, button, input, textarea {
 .navbar, .navbar-brand, .nav-link, .dropdown-item {
   font-family: "Poppins", sans-serif !important;
 }
+
+* {
+  font-family: 'Poppins', sans-serif !important;
+}
