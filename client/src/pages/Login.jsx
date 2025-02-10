@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "./Login.css"; // Import the CSS file
+import "./Login.css";
+import { Link, redirect } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -15,6 +16,11 @@ const Login = () => {
       <h1>Login</h1>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="input-group">
+          <div className="sign-up-link">
+            <p>
+              Don't have an account? <Link to="/home">Register Now</Link>
+            </p>
+          </div>
           <input
             type="email"
             placeholder="Email"
