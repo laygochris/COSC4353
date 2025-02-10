@@ -18,7 +18,6 @@ function App() {
     <Router>
       <div className="App">
         <CustomNavbar />
-
         <Routes>
           <Route path="/eventManagement" element={<EventManagement/>} />
           <Route path="/home" element={<Home/>} />

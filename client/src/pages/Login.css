@@ -1,0 +1,41 @@
+/* Centering the login container */
+.login-container {
+    text-align: center;
+    padding: 50px;
+  }
+  
+  /* Styling for the form */
+  .login-form {
+    max-width: 300px;
+    margin: auto;
+  }
+  
+  /* Styling for input fields */
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+  
+  /* Styling for the login button */
+  .login-button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #007BFF;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .login-button:hover {
+    background: #0056b3;
+  }
+  
