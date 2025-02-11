@@ -1,41 +1,71 @@
-/* Centering the login container */
 .login-container {
     text-align: center;
     padding: 50px;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: white; 
+  }
+
+ .login-box {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+    width: 380px; /* Box width */
+    text-align: center;
+    justify-content: center;
   }
   
-  /* Styling for the form */
   .login-form {
     max-width: 300px;
     margin: auto;
   }
   
-  /* Styling for input fields */
   .input-group {
     margin-bottom: 15px;
   }
   
-  .input-group input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-  }
   
-  /* Styling for the login button */
-  .login-button {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    background: #007BFF;
-    color: white;
-    cursor: pointer;
-    font-size: 16px;
-  }
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  outline: none;
+  transition: border 0.3s ease-in-out;
+}
+
+.input-group input:focus {
+  border: 2px solid 2C365E;
+  box-shadow: 0 0 5px rgba(44, 54, 94, 0.5); 
+}
+.login-button {
+  width: 100%;
+  padding: 10px;
+  font-size: 20px;
+  border-radius: 5px;
+  background-color: #60993E !important; 
+  border: 2px solid #8A95A5 !important;
+  color: white !important;
+}
+
+.login-button:hover {
+  background-color: white !important;
+  color: #60993E !important;
+  border: 2px solid #60993E !important;
+}
+
   
-  .login-button:hover {
-    background: #0056b3;
+  .sign-up-link, 
+  .forgot-password-link{
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    font-size: 13px;
   }
   
