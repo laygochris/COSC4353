@@ -3,36 +3,88 @@ import { Button, Container, Card, Row, Col, Badge, Form, Alert } from 'react-boo
 
 const VolunteerMatching = () => {
   const [volunteers, setVolunteers] = useState([
-    { 
-      id: 1, 
-      name: 'Alice Johnson', 
-      skills: ['Organization', 'Teamwork'], 
+    {
+      id: 1,
+      name: "Alice Johnson",
+      skills: ["Teamwork", "Leadership"],
       matchedEvents: [
-        { name: 'Community Cleanup', location: 'Central Park', date: 'March 15, 2025', time: '10:00 AM - 2:00 PM', skills: ['Organization', 'Teamwork'], description: 'Join us in cleaning up the local park and keeping our community clean.' },
-        { name: 'Beach Cleanup', location: 'Santa Monica Beach', date: 'April 10, 2025', time: '9:00 AM - 1:00 PM', skills: ['Teamwork'], description: 'Help us remove trash and protect marine life at Santa Monica Beach.' }
-      ]
+        {
+          name: "Community Cleanup",
+          location: "Galveston, TX",
+          date: "08/16/24",
+          time: "10:00 AM - 2:00 PM",
+          skills: ["Teamwork", "Leadership"],
+          description: "Join us in cleaning up the coastline to protect marine life.",
+        },
+        {
+          name: "Beach Cleanup",
+          location: "Santa Monica Beach",
+          date: "04/10/24",
+          time: "9:00 AM - 1:00 PM",
+          skills: ["Teamwork"],
+          description: "Help us remove trash and protect marine life at Santa Monica Beach.",
+        },
+      ],
     },
-    { 
-      id: 2, 
-      name: 'Bob Smith', 
-      skills: ['Cooking', 'Logistics'], 
+    {
+      id: 2,
+      name: "Bob Smith",
+      skills: ["Communication", "Organization"],
       matchedEvents: [
-        { name: 'Food Bank Assistance', location: 'Houston Food Bank', date: 'March 20, 2025', time: '9:00 AM - 12:00 PM', skills: ['Logistics'], description: 'Help sort and distribute food to families in need at the food bank.' },
-        { name: 'Soup Kitchen Service', location: 'Downtown Shelter', date: 'April 5, 2025', time: '11:00 AM - 3:00 PM', skills: ['Cooking', 'Logistics'], description: 'Assist in cooking and serving meals to the homeless.' }
-      ]
-    }
+        {
+          name: "Food Bank Assistance",
+          location: "Houston Food Bank",
+          date: "07/20/24",
+          time: "9:00 AM - 12:00 PM",
+          skills: ["Communication", "Organization"],
+          description: "Help distribute food to families in need.",
+        },
+        {
+          name: "Tutoring Program",
+          location: "Pearland, TX",
+          date: "10/28/24",
+          time: "2:00 PM - 5:00 PM",
+          skills: ["Communication"],
+          description: "Assist students with academic subjects in a tutoring program.",
+        },
+      ],
+    },
+    {
+      id: 3,
+      name: "Charlie Davis",
+      skills: ["Animal Care", "Patience"],
+      matchedEvents: [
+        {
+          name: "Animal Shelter Help",
+          location: "Sugar Land, TX",
+          date: "12/05/24",
+          time: "11:00 AM - 3:00 PM",
+          skills: ["Animal Care"],
+          description: "Assist in caring for rescued animals.",
+        },
+      ],
+    },
   ]);
 
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [matchNotification, setMatchNotification] = useState(null);
   const [searchSkill, setSearchSkill] = useState('');
+  const [filteredVolunteers, setFilteredVolunteers] = useState([]);
+
+  const handleSkillSearch = () => {
+    const matchingVolunteers = volunteers.filter(v => v.skills.includes(searchSkill));
+    setFilteredVolunteers(matchingVolunteers);
+  };
 
   return (
     <Container className="mt-4">
       <h2 className="text-center mb-4">Volunteer Matching Form</h2>
-      <h3 className="text-center mt-4">Search by Volunteer</h3>
+      
       {matchNotification && <Alert style={{ backgroundColor: '#deeed5', borderColor: '#deeed5', color: '#4e7d33' }} className="text-center">{matchNotification}</Alert>}
+
+      {/* Search by Name */}
+      <h3 className="text-center mt-4">Search by Volunteer</h3>
       <Form>
         <Form.Group controlId="volunteerSelect" className="mb-3">
           <Form.Label>Search for Volunteers by Name</Form.Label>
@@ -43,6 +95,7 @@ const VolunteerMatching = () => {
             ))}
           </Form.Control>
         </Form.Group>
+
         {selectedVolunteer && (
           <Row className="justify-content-center">
             {selectedVolunteer.matchedEvents.map((event, index) => (
@@ -80,32 +133,6 @@ const VolunteerMatching = () => {
           </Row>
         )}
       </Form>
-      
-      <h3 className="text-center mt-4">Search by Skill</h3>
-      <Form.Group controlId="skillSearch" className="mb-3">
-        <Form.Label>Search for Volunteers by Skill</Form.Label>
-        <Form.Control type="text" placeholder="Enter skill" value={searchSkill} onChange={(e) => setSearchSkill(e.target.value)} />
-      </Form.Group>
-      <Row className="justify-content-center">
-        {volunteers.filter(volunteer => volunteer.skills.some(skill => skill.toLowerCase().includes(searchSkill.toLowerCase()))).map((volunteer) => (
-          <Col md={6} key={volunteer.id} className="mb-3">
-            <Card>
-              <Card.Body>
-                <Card.Title>{volunteer.name}</Card.Title>
-                <Card.Text>
-                  <strong>Skills:</strong> {volunteer.skills.map(skill => (
-                    <Badge key={skill} bg="secondary" className="me-1">{skill}</Badge>
-                  ))}
-                </Card.Text>
-                <Button className="w-100 mt-2" style={{ backgroundColor: '#60993E', borderColor: '#8A95A5', color: 'white' }} onClick={() => {
-                  setMatchNotification(`${volunteer.name} has been matched based on skill search.`);
-                  setTimeout(() => setMatchNotification(null), 2000);
-                }}>Match</Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
     </Container>
   );
 };
