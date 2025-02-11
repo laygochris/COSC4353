@@ -1,0 +1,6 @@
+.navbar-logo {
+    height: 70px;
+    width: auto; 
+    display: block;
+    object-fit: contain; 
+}
