@@ -1,0 +1,25 @@
+.notification-message {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px; 
+    display: inline-block;
+  }
+  
+  .dropdown-menu {
+    width: 350px !important; 
+    max-height: 300px; 
+    overflow-y: auto;
+  }
+  
+  .dismiss-button {
+    font-size: 14px;  
+    padding: 4px 8px; 
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  

@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import "./navbar.css";
 import Container from "react-bootstrap/Container";
@@ -6,6 +5,8 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import logo from "../images/ih_logo_navbar.png";
+import Notifications from "../pages/Notifications";
+
 
 const CustomNavbar = () => {
   return (
@@ -38,21 +39,7 @@ const CustomNavbar = () => {
             <Nav.Link as={Link} to="/events">
               Events
             </Nav.Link>
-            <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-              <NavDropdown.Item as={Link} to="/action1">
-                Action
-              </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/action2">
-                Another action
-              </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/action3">
-                Something else here
-              </NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item as={Link} to="/action4">
-                Separated link
-              </NavDropdown.Item>
-            </NavDropdown>
+            <Notifications />
           </Nav>
         </Navbar.Collapse>
       </Container>

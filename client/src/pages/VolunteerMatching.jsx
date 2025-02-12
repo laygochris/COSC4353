@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Container, Card, Row, Col, Badge, Form, Alert } from 'react-bootstrap';
 
-const VolunteerMatching = () => {
+const VolunteerMatching = ({ userRole }) => {
+  const navigate = useNavigate();
+  
+  const [isAdmin, setIsAdmin] = useState(userRole === 'admin'); 
   const [volunteers, setVolunteers] = useState([
     {
       id: 1,
@@ -49,21 +53,6 @@ const VolunteerMatching = () => {
         },
       ],
     },
-    {
-      id: 3,
-      name: "Charlie Davis",
-      skills: ["Animal Care", "Patience"],
-      matchedEvents: [
-        {
-          name: "Animal Shelter Help",
-          location: "Sugar Land, TX",
-          date: "12/05/24",
-          time: "11:00 AM - 3:00 PM",
-          skills: ["Animal Care"],
-          description: "Assist in caring for rescued animals.",
-        },
-      ],
-    },
   ]);
 
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
@@ -72,6 +61,14 @@ const VolunteerMatching = () => {
   const [searchSkill, setSearchSkill] = useState('');
   const [filteredVolunteers, setFilteredVolunteers] = useState([]);
 
+  useEffect(() => {
+    if (!isAdmin) {
+      navigate('/home'); 
+    }
+  }, [isAdmin, navigate]);
+
+  if (!isAdmin) return null;
+
   const handleSkillSearch = () => {
     const matchingVolunteers = volunteers.filter(v => v.skills.includes(searchSkill));
     setFilteredVolunteers(matchingVolunteers);
@@ -79,15 +76,13 @@ const VolunteerMatching = () => {
 
   return (
     <Container className="mt-4">
-      <h2 className="text-center mb-4">Volunteer Matching Form</h2>
-      
+      <h2 className="text-center mb-4">Volunteer Matching Form (Admin Only)</h2>
+
       {matchNotification && <Alert style={{ backgroundColor: '#deeed5', borderColor: '#deeed5', color: '#4e7d33' }} className="text-center">{matchNotification}</Alert>}
 
-      {/* Search by Name */}
       <h3 className="text-center mt-4">Search by Volunteer</h3>
       <Form>
         <Form.Group controlId="volunteerSelect" className="mb-3">
-          <Form.Label>Search for Volunteers by Name</Form.Label>
           <Form.Control as="select" onChange={(e) => setSelectedVolunteer(volunteers.find(v => v.id === parseInt(e.target.value))) }>
             <option value="">Select a Volunteer</option>
             {volunteers.map(volunteer => (

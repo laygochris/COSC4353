@@ -92,33 +92,37 @@ const VolunteerHistory = () => {
                     )}
                   </td>
                   <td>
-                    <span
-                      className={`badge ${
-                        event.urgency === "High"
-                          ? "bg-danger"
-                          : event.urgency === "Medium"
-                          ? "bg-warning"
-                          : "bg-success"
-                      }`}
-                    >
-                      {event.urgency}
-                    </span>
+                  <span
+                    className="badge"
+                    style={
+                      event.urgency === "High"
+                        ? { backgroundColor: '#931621', borderColor: '#8A95A5', color: 'white' } 
+                        : event.urgency === "Medium"
+                        ? { backgroundColor: '#D9A404', borderColor: '#FFA000', color: 'white' }  
+                        : event.urgency === "Low"
+                        ? { backgroundColor: '#60993E', borderColor: '#8A95A5', color: 'white' } 
+                        : {}
+                    }
+                  >
+                    {event.urgency}
+                  </span>
                   </td>
                   <td>{event.eventDate}</td>
                   <td>
-                    <span
-                      className={`badge ${
-                        event.status === "Completed"
-                          ? "bg-success"
-                          : event.status === "Upcoming"
-                          ? "bg-primary"
-                          : event.status === "Canceled"
-                          ? "bg-danger"
-                          : "bg-secondary"
-                      }`}
-                    >
-                      {event.status}
-                    </span>
+                  <span
+                    className="badge"
+                    style={
+                      event.status === "Completed"
+                        ? { backgroundColor: '#60993E', borderColor: '#8A95A5', color: 'white' } 
+                        : event.status === "Upcoming"
+                        ? { backgroundColor: '#2C365E', borderColor: '#8A95A5', color: 'white' } 
+                        : event.status === "Canceled"
+                        ? { backgroundColor: '#931621', borderColor: '#8A95A5', color: 'white' } 
+                        : { backgroundColor: '#8A95A5', borderColor: '#EDEEC9', color: 'white' } 
+                    }
+                  >
+                    {event.status}
+                  </span>
                   </td>
                 </tr>
               ))
