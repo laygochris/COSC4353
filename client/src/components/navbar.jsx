@@ -24,9 +24,6 @@ const CustomNavbar = () => {
             <Nav.Link as={Link} to="/eventManagement">
               Event Management
             </Nav.Link>
-            <Nav.Link as={Link} to="/notifications">
-              Notifications
-            </Nav.Link>
             <Nav.Link as={Link} to="/userProfile">
               Profile
             </Nav.Link>
