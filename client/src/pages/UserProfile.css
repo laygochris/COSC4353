@@ -1,23 +1,16 @@
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #EDEEC9;
-}
 
-/* Center the form */
 .user-profile-container {
-    max-width: 600px; /* Adjust width */
+    max-width: 600px; 
     margin: 50px auto;
     padding: 20px;
 }
 
-/* card */
 .user-profile-form {
     border-radius: 12px;
     padding: 25px;
     background: white;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    /*box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);*/
 }
-
 
 .user-profile-form .form-control,
 .user-profile-form .form-select {
@@ -27,27 +20,23 @@ body {
     font-size: 16px;
 }
 
-/* invalid inputs */
 .user-profile-form .is-invalid {
     border-color: #e63946;
     background-color: #ffebee;
 }
 
-/* shadow */
 .user-profile-form input:focus,
 .user-profile-form select:focus,
 .user-profile-form textarea:focus {
-    border-color: #4CAF50; /* Light green */
-    box-shadow: 0px 0px 5px rgba(76, 175, 80, 0.5);
+    border-color: #4CAF50; 
+    /*box-shadow: 0px 0px 5px rgba(76, 175, 80, 0.5);*/
 }
 
-/* Error messages */
 .invalid-feedback {
     font-size: 14px;
     color: #e63946;
 }
 
-/* submit button */
 .user-profile-form .btn-primary {
     background-color: #4CAF50;
     border-radius: 8px;
