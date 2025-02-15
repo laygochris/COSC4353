@@ -1,0 +1,43 @@
+.event-management-container {
+background-color: white !important; /* make sure background is white */
+padding: 30px;
+border-radius: 10px;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* depth */
+max-width: 800px;
+margin: auto;
+}
+/* black for event management */
+.event-management-container h1 {
+color: black !important;
+}
+/* styling */
+.event-form {
+background-color: white;
+padding: 20px;
+border-radius: 10px;
+border: 2px solid #8a95a5; /* gray border */
+}
+/* labels */
+.event-form .form-label {
+font-weight: bold;
+color: #2C365E;
+}
+.event-form .form-control {
+border: 1px solid #8a95a5;
+border-radius: 5px;
+}
+/* multi-select dropdown */
+.event-form .form-select {
+border: 1px solid #8a95a5;
+border-radius: 5px;
+}
+/* submit */
+.event-form .btn-primary {
+background-color: #931621;
+border-color: #931621;
+font-weight: bold;
+}
+.event-form .btn-primary:hover {
+background-color: #60993E;
+border-color: #60993E;
+}
