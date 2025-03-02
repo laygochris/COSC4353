@@ -2,9 +2,13 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:5001",
   "dependencies": {
     "bootstrap": "^5.3.3",
+    "cors": "^2.8.5",
     "cra-template": "1.2.0",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.1",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
@@ -39,6 +43,8 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "eslint-plugin-react": "^7.37.4"
+    "eslint-plugin-react": "^7.37.4",
+    "jest": "^27.5.1",
+    "supertest": "^7.0.0"
   }
 }

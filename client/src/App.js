@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CustomNavbar from './components/navbar';
@@ -13,8 +13,17 @@ import VolunteerHistory from './pages/VolunteerHistory';
 import VolunteerMatching from './pages/VolunteerMatching';
 import Events from './pages/Events';
 
+
+
 function App() {
   const [userRole, setUserRole] = useState("admin"); 
+
+  useEffect(() => {
+    fetch('/api/hello')
+      .then((res) => res.json())
+      .then((data) => console.log(data))
+      .catch((err) => console.error(err));
+  }, []);
 
   return (
     <Router>

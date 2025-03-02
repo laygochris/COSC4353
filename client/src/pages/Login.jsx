@@ -6,7 +6,32 @@ import { Button, Card, Container, Row, Col } from "react-bootstrap";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      // sending a post request to specified URL
+      const response = await fetch("http://localhost:5001/api/login", {
+        method: "POST", // specify that is a POST request
+        headers: {
+          // set Content-Type to application/json, indicating
+          // that the request body contains JSON data
+          "Content-Type": "application/json",
+        },
+        // converts email and pasword to JSON string and includes it in request body
+        body: JSON.stringify({ email, password }),
+      });
+      // after "trying" wait for backend to respond and display message
+      const data = await response.json();
+      setMessage(data.message);
+      console.log("Logging in with:", { email, password });
+      navigate("/home");
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -27,7 +52,7 @@ const Login = () => {
                   <Link to="/register">Register Now</Link>
                 </p>
               </div>
-              <form onSubmit={handleSubmit} className="login-form">
+              <form onSubmit={handleLogin} className="login-form">
                 <div className="input-group">
                   <input
                     type="email"
