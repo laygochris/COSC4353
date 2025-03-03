@@ -2,7 +2,7 @@ const { validationResult } = require('express-validator');
 
 const users = [
     {id: 1, firstName: 'John', lastName: 'Doe', username: 'jd', email: 'test@example.com', password: 'password', userType: 'admin'},
-    {id: 2, firstName: 'Link', lastName: 'Link', username: 'Hero', email: 'link@hyrule.com', password: 'zelda4ever', userType: 'normal'}
+    {id: 2, firstName: 'Link', lastName: 'Link', username: 'Hero', email: 'link@hyrule.com', password: 'zelda4ever', userType: 'volunteer'}
 ];
 
 // controller for registration
@@ -22,7 +22,7 @@ exports.registerUser = (req, res) => {
   }
 
   // create new user
-  const newUser = { id: Date.now(), firstName, lastName, username, email, password, userType: userType || 'normal' };
+  const newUser = { id: Date.now(), firstName, lastName, username, email, password, userType: userType || 'volunteer' };
   users.push(newUser);
 
   res.status(201).json({

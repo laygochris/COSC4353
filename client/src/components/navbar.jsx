@@ -67,3 +67,89 @@ const CustomNavbar = () => {
 };
 
 export default CustomNavbar;
+
+// FOR WHEN WE IMPLEMENT USER/ADMIN VIEW
+// import { Link, useNavigate } from "react-router-dom";
+// import { useState, useEffect } from "react";
+// import "./navbar.css";
+// import Container from "react-bootstrap/Container";
+// import Nav from "react-bootstrap/Nav";
+// import Navbar from "react-bootstrap/Navbar";
+// import NavDropdown from "react-bootstrap/NavDropdown";
+// import logo from "../images/ih_logo_navbar.png";
+// import Notifications from "../pages/Notifications";
+// import { CgProfile } from "react-icons/cg";
+
+// const CustomNavbar = () => {
+//   const [userName, setUserName] = useState("");
+//   const [userRole, setUserRole] = useState("");
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     fetchUserProfile();
+//   }, []);
+
+//   const fetchUserProfile = async () => {
+//     const storedUser = localStorage.getItem("user");
+//     if (storedUser) {
+//       const userData = JSON.parse(storedUser);
+//       setUserName(userData.fullName);
+//       setUserRole(userData.userType);
+//     } else {
+//       setUserName("Guest");
+//       setUserRole("");
+//     }
+//   };
+
+//   const handleLogout = () => {
+//     localStorage.removeItem("user");
+//     setUserName("Guest");
+//     setUserRole("");
+//     navigate("/login");
+//   };
+
+//   return (
+//     <Navbar expand="lg" className="bg-body-tertiary">
+//       <Container>
+//         <Navbar.Brand as={Link} to="/home">
+//           <img src={logo} alt="Impact Houston" className="navbar-logo" />
+//         </Navbar.Brand>
+
+//         <Navbar.Toggle aria-controls="basic-navbar-nav" />
+//         <Navbar.Collapse id="basic-navbar-nav">
+//           <Nav className="mx-auto">
+//             {!userName || userName === "Guest" ? (
+//               <Nav.Link as={Link} to="/login">Login</Nav.Link>
+//             ) : (
+//               <Nav.Link onClick={handleLogout} style={{ cursor: "pointer" }}>Logout</Nav.Link>
+//             )}
+
+//             {userRole === "admin" && (
+//               <Nav.Link as={Link} to="/eventManagement">Event Management</Nav.Link>
+//             )}
+
+//             {userRole === "volunteer" && (
+//               <Nav.Link as={Link} to="/volunteerHistory">Volunteer History</Nav.Link>
+//             )}
+        
+//             {userRole === "admin" && (
+//               <Nav.Link as={Link} to="/volunteerMatchingForm">Volunteer Matching Form</Nav.Link>
+//             )}
+//             <Nav.Link as={Link} to="/events">Events</Nav.Link>
+//           </Nav>
+
+//           <Nav className="ms-auto">
+//             <Navbar.Text className="me-3">Signed in as {userName || "Guest"}</Navbar.Text>
+//             <Nav.Link as={Link} to="/userProfile">
+//               <CgProfile size={25} />
+//             </Nav.Link>
+//             <Notifications />
+//           </Nav>
+//         </Navbar.Collapse>
+//       </Container>
+//     </Navbar>
+//   );
+// };
+
+// export default CustomNavbar;
+
