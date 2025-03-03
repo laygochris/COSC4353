@@ -7,9 +7,10 @@ import { Button, Card, Container, Row, Col } from "react-bootstrap";
 const Register = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [userName, setUserName] = useState("");
+  const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -18,13 +19,38 @@ const Register = () => {
     navigate("/home");
   };
 
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:5001/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          username,
+          email,
+          password,
+        }),
+      });
+      const data = await response.json();
+      setMessage(data.message);
+      console.log("Welcome: ", { firstName, lastName, username });
+      navigate("/home");
+    } catch (error) {
+      console.error("Error during registration:", error);
+    }
+  };
+
   return (
     <Container className="register-container">
       <Row className="justify-content-center">
         <Card className="register-card">
           <Card.Body>
             <h2 className="register-title">Register</h2>
-            <form onSubmit={handleSubmit} className="register-form">
+            <form onSubmit={handleRegister} className="register-form">
               {/* Name Fields */}
               <Row className="input-row">
                 <p className="input-descriptor">Name</p>
@@ -60,7 +86,7 @@ const Register = () => {
                     placeholder="Enter your username"
                     col
                     md={6}
-                    value={userName}
+                    value={username}
                     onChange={(e) => setUserName(e.target.value)}
                     required
                   />

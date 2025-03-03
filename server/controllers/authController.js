@@ -1,9 +1,9 @@
 // server/controllers/authController.js
 const { validationResult } = require('express-validator');
 
-const data = [
-    {id: 1, email: 'test@example.com', password: 'password'},
-    {id: 2, email: 'link@zelda.com', password: 'hyrule4ever'}
+const users = [
+    {id: 1, firstName: 'John', lastName: 'Doe', username: 'jd', email: 'test@example.com', password: 'password'},
+    {id: 2, firstName: 'Link', lastName: 'Link', username: 'Hero', email: 'link@hyrule.com', password: 'zelda4ever'}
 ]
 
 // controller for registration
@@ -14,21 +14,21 @@ exports.registerUser = (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { email, password } = req.body;
+  const { firstName, lastName, username, email, password } = req.body;
 
   // check if user exists
-  const existingUser = users.find((u) => u.email === email);
+  const existingUser = users.find((u) => u.email === email || u.username === username);
   if (existingUser) {
     return res.status(400).json({ message: 'User already exists.' });
   }
 
   // create new user
-  const newUser = { id: Date.now(), email, password };
+  const newUser = { id: Date.now(), firstName, lastName, username, email, password };
   users.push(newUser);
 
   res.status(201).json({
     message: 'User registered successfully!',
-    user: newUser,
+    user: username,
   });
 };
 
