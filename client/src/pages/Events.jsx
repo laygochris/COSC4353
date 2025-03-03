@@ -1,48 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Container, Card, Row, Col, Badge } from "react-bootstrap";
 
 const Events = () => {
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      name: "Community Cleanup",
-      skills: ["Teamwork", "Leadership"],
-      description: "Join us in cleaning up the coastline to protect marine life.",
-      location: "Galveston, TX",
-      date: "08/16/24",
-      time: "10:00 AM - 2:00 PM",
-    },
-    {
-      id: 2,
-      name: "Food Bank Assistance",
-      skills: ["Communication", "Organization"],
-      description: "Help distribute food to families in need.",
-      location: "Houston Food Bank",
-      date: "07/20/24",
-      time: "9:00 AM - 12:00 PM",
-    },
-    {
-      id: 3,
-      name: "Tutoring Program",
-      skills: ["Communication"],
-      description: "Assist students with academic subjects in a tutoring program.",
-      location: "Pearland, TX",
-      date: "10/28/24",
-      time: "2:00 PM - 5:00 PM",
-    },
-    {
-      id: 4,
-      name: "Animal Shelter Help",
-      skills: ["Animal Care"],
-      description: "Assist in caring for rescued animals.",
-      location: "Sugar Land, TX",
-      date: "12/05/24",
-      time: "11:00 AM - 3:00 PM",
-    },
-  ]);
-
+  const [events, setEvents] = useState([]);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/api/events");
+      const data = await response.json();
+      setEvents(data);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
+  };
 
   const handleEventClick = (event) => {
     setSelectedEvent(selectedEvent?.id === event.id ? null : event);
@@ -63,7 +39,7 @@ const Events = () => {
 
   return (
     <Container className="mt-4">
-      <h2 className="text-center mb-4">Volunteer Matching</h2>
+      <h2 className="text-center mb-4">Events</h2>
       <Row className="mb-3 justify-content-center">
         {["Teamwork", "Leadership", "Communication", "Organization", "Animal Care"].map((skill) => (
           <Col xs="auto" key={skill} className="mb-2">
@@ -99,8 +75,7 @@ const Events = () => {
                   {event.location}
                 </Card.Subtitle>
                 <Card.Text>
-                  <strong>Date:</strong> {event.date} <br />
-                  <strong>Time:</strong> {event.time}
+                  <strong>Date:</strong> {event.date}
                 </Card.Text>
                 <div className="mb-2">
                   {event.skills.map((skill) => (
