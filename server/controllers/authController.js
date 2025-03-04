@@ -1,37 +1,78 @@
+const fs = require('fs');
+const path = require('path');
 const { validationResult } = require('express-validator');
 
-const users = [
-    {id: 1, firstName: 'John', lastName: 'Doe', username: 'jd', email: 'test@example.com', password: 'password', userType: 'admin'},
-    {id: 2, firstName: 'Link', lastName: 'Link', username: 'Hero', email: 'link@hyrule.com', password: 'zelda4ever', userType: 'volunteer'}
-];
+// Path to the JSON file
+const filePath = path.join(__dirname, '../data/users.json');
 
-// controller for registration
+// Helper function to load users
+const loadUsers = () => {
+  try {
+    console.log("Attempting to read file from path:", filePath); // Debugging line
+    const dataBuffer = fs.readFileSync(filePath);
+    const dataJSON = dataBuffer.toString();
+    console.log("Data read from file:", dataJSON); // Debugging line
+    if (dataJSON.trim() === "") {
+      console.error("Error: users.json file is empty."); // Debugging line
+      return [];
+    }
+    return JSON.parse(dataJSON);
+  } catch (error) {
+    console.error("Error reading users file:", error); // Debugging line
+    return [];
+  }
+};
+
+// Helper function to save users
+const saveUsers = (users) => {
+  fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
+};
+
+// Register User Controller
 exports.registerUser = (req, res) => {
-  // checking for validation errors
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { firstName, lastName, username, email, password, userType } = req.body;
+  // Extract required fields
+  const { firstName, lastName, email, username, password } = req.body;
 
-  // check if user exists
-  const existingUser = users.find((u) => u.email === email || u.username === username);
+  // Load current users from file
+  let users = loadUsers();
+  // console.log(users);
+
+  // Check for duplicate username or email
+  const existingUser = users.find(
+    (u) => u.username === username || u.email === email
+  );
   if (existingUser) {
     return res.status(400).json({ message: 'User already exists.' });
   }
 
-  // create new user
-  const newUser = { id: Date.now(), firstName, lastName, username, email, password, userType: userType || 'volunteer' };
+  // Create a new user object
+  const newUser = { 
+    id: Date.now(), 
+    firstName, 
+    lastName, 
+    email, 
+    username, 
+    password 
+  };
+
+  // Add new user to the users array
   users.push(newUser);
 
-  res.status(201).json({
+  // Save the updated users array to the file
+  saveUsers(users);
+
+  return res.status(201).json({
     message: 'User registered successfully!',
     user: newUser,
   });
 };
 
-// controller for user login
+// Login User Controller
 exports.loginUser = (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -40,7 +81,11 @@ exports.loginUser = (req, res) => {
 
   const { email, password } = req.body;
 
-  // Look for user in data
+  // Load users from file
+  let users = loadUsers();
+  console.log("Loaded users:", users); // Debugging line
+
+  // Find the user matching the credentials
   const foundUser = users.find(
     (u) => u.email === email && u.password === password
   );
@@ -49,12 +94,8 @@ exports.loginUser = (req, res) => {
     return res.status(401).json({ message: 'Invalid credentials.' });
   }
 
-  res.json({
+  return res.json({
     message: 'Login successful!',
-    user: {
-      id: foundUser.id,
-      fullName: `${foundUser.firstName} ${foundUser.lastName}`,
-      userType: foundUser.userType
-    }
+    user: foundUser,
   });
 };

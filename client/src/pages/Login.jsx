@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, Container, Row, Col } from "react-bootstrap";
-
+// TO-DO: MAKE POP UP IF USER DOES NOT EXIST
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +23,9 @@ const Login = () => {
         // converts email and pasword to JSON string and includes it in request body
         body: JSON.stringify({ email, password }),
       });
+      if (!response.ok) {
+        throw new Error("User not found or invalid credentials");
+      }
       // after "trying" wait for backend to respond and display message
       const data = await response.json();
       setMessage(data.message);

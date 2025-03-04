@@ -1,10 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-
+const path = require('path');
 const app = express();
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Example route
+
 app.use(express.json());
 app.use(cors());
+
+app.get('/', (req, res) => {
+  console.log('Root URL accessed');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 const PORT = process.env.PORT || 5001;
 

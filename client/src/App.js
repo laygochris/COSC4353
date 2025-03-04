@@ -30,6 +30,7 @@ function App() {
       <div className="App">
         <CustomNavbar />
         <Routes>
+          <Route path="/" element={<Navigate to="/home" />} />
           <Route path="/eventManagement" element={<EventManagement />} />
           <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
