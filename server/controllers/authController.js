@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
-const key = 'yourSecretKey';
+const key = process.env.JWT_SECRET || 'yourSecretKey';
 
 
 // Path to the JSON file
@@ -60,7 +60,9 @@ exports.registerUser = (req, res) => {
     lastName, 
     email, 
     username, 
-    password 
+    password,
+    userType: 'user',
+    skills: []
   };
 
   // Add new user to the users array
@@ -77,31 +79,16 @@ exports.registerUser = (req, res) => {
 
 // Login User Controller
 exports.loginUser = (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
   const { email, password } = req.body;
+  const users = require('../data/users.json');
 
-  // Load users from file
-  let users = loadUsers();
-  // console.log("Loaded users:", users); // Debugging line
-
-  // Find the user matching the credentials
-  const foundUser = users.find(
-    (u) => u.email === email && u.password === password
-  );
-
+  const foundUser = users.find(user => user.email === email && user.password === password);
   if (!foundUser) {
     return res.status(401).json({ message: 'Invalid credentials.' });
   }
-  //jwt.sign(payload, key, options):
-  //payload: info about user like userID, email 
-  //key: secret key that we store 
-  //options: how long the token is alive for 
+
   const token = jwt.sign(
-    { userID: foundUser.id, email: foundUser.email},
+    { userID: foundUser.id, email: foundUser.email },
     key,
     { expiresIn: "1hr" }
   );

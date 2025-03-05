@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import "./navbar.css";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
@@ -14,14 +14,10 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
   const [userType, setUserType] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchUserProfile();
-  }, [loggedIn]);
-
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
-    console.log("HELLO FROM THE NAVBAR");
+    console.log("NAVBAR HAS:", userId);
     if (token && userId) {
       try {
         const response = await fetch(
@@ -33,9 +29,11 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
           }
         );
         const data = await response.json();
+        console.log("Fetched user data:", data); // Log the entire data object
         setUsername(data.username);
         setUserType(data.userType);
         setUserRole(data.userType);
+        console.log("userType:", data.userType);
       } catch (error) {
         console.error("Error fetching user profile:", error);
       }
@@ -44,7 +42,16 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
       setUserType("");
       setUserRole(""); // Reset userRole state
     }
-  };
+  }, [setUserRole]);
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, [loggedIn, fetchUserProfile]);
+
+  useEffect(() => {
+    console.log("Username:", username);
+    console.log("UserType:", userType);
+  }, [username, userType]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");

@@ -9,11 +9,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(cors());
 
-// app.get('/', (req, res) => {
-//   console.log('Root URL accessed');
-//   res.sendFile(path.join(__dirname, 'public', 'index.html'));
-// });
-
 const PORT = process.env.PORT || 5001;
 
 // Import the routes

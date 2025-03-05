@@ -1,12 +1,12 @@
 [
-    { "id": 2, "firstName": "Link", "lastName": "Link", "email": "link@hyrule.com", "password": "zelda4ever", "userType": "volunteer", "skills": ["Leadership", "Teamwork"] },
-    { "id": 3, "firstName": "Alice", "lastName": "Smith", "email": "alice@example.com", "password": "password", "userType": "volunteer", "skills": ["Communication", "Organization"] },
-    { "id": 4, "firstName": "Bob", "lastName": "Brown", "email": "bob@example.com", "password": "password", "userType": "volunteer", "skills": ["Teamwork", "Animal Care"] },
-    { "id": 5, "firstName": "Eve", "lastName": "Johnson", "email": "eve@example.com", "password": "password", "userType": "volunteer", "skills": ["Leadership", "Communication"] },
-    { "id": 6, "firstName": "Charlie", "lastName": "Davis", "email": "charlie@example.com", "password": "password", "userType": "volunteer", "skills": ["Organization", "Teamwork"] },
-    { "id": 7, "firstName": "Grace", "lastName": "Wilson", "email": "grace@example.com", "password": "password", "userType": "volunteer", "skills": ["Animal Care", "Leadership"] },
-    { "id": 8, "firstName": "Michael", "lastName": "Lee", "email": "michael@example.com", "password": "password", "userType": "volunteer", "skills": ["Communication", "Teamwork"] },
-    { "id": 9, "firstName": "Sophia", "lastName": "Taylor", "email": "sophia@example.com", "password": "password", "userType": "volunteer", "skills": ["Organization", "Leadership"] },
-    { "id": 10, "firstName": "David", "lastName": "Martinez", "email": "david@example.com", "password": "password", "userType": "volunteer", "skills": ["Teamwork", "Animal Care"] },
-    { "id": 1, "firstName": "John", "lastName": "Doe", "email": "test@example.com", "password": "password", "userType": "admin" }
+    { "id": 2, "firstName": "Link", "lastName": "Link", "email": "link@hyrule.com", "username": "link", "password": "zelda4ever", "userType": "volunteer", "skills": ["Leadership", "Teamwork"] },
+    { "id": 3, "firstName": "Alice", "lastName": "Smith", "email": "alice@example.com", "username": "alice", "password": "password", "userType": "volunteer", "skills": ["Communication", "Organization"] },
+    { "id": 4, "firstName": "Bob", "lastName": "Brown", "email": "bob@example.com", "username": "bob", "password": "password", "userType": "volunteer", "skills": ["Teamwork", "Animal Care"] },
+    { "id": 5, "firstName": "Eve", "lastName": "Johnson", "email": "eve@example.com", "username": "eve", "password": "password", "userType": "volunteer", "skills": ["Leadership", "Communication"] },
+    { "id": 6, "firstName": "Charlie", "lastName": "Davis", "email": "charlie@example.com", "username": "charlie", "password": "password", "userType": "volunteer", "skills": ["Organization", "Teamwork"] },
+    { "id": 7, "firstName": "Grace", "lastName": "Wilson", "email": "grace@example.com", "username": "grace", "password": "password", "userType": "volunteer", "skills": ["Animal Care", "Leadership"] },
+    { "id": 8, "firstName": "Michael", "lastName": "Lee", "email": "michael@example.com", "username": "michael", "password": "password", "userType": "volunteer", "skills": ["Communication", "Teamwork"] },
+    { "id": 9, "firstName": "Sophia", "lastName": "Taylor", "email": "sophia@example.com", "username": "sophia", "password": "password", "userType": "volunteer", "skills": ["Organization", "Leadership"] },
+    { "id": 10, "firstName": "David", "lastName": "Martinez", "email": "david@example.com", "username": "david", "password": "password", "userType": "volunteer", "skills": ["Teamwork", "Animal Care"] },
+    { "id": 1, "firstName": "John", "lastName": "Doe", "email": "test@example.com", "username": "john", "password": "password", "userType": "admin", "skills": [] }
 ]

@@ -28,13 +28,14 @@ const Login = ({ setLoggedIn, setUserRole }) => {
       setMessage(data.message);
 
       if (data.token) {
+        console.log("HELLO FROM TOKEN");
         localStorage.setItem("token", data.token);
         localStorage.setItem("userId", data.user.id);
         setLoggedIn(true);
         setUserRole(data.user.userType); // Update userRole state
       }
 
-      console.log("Logging in with:", { email, password });
+      // console.log("Logging in with:", { email, password });
       navigate("/home");
     } catch (error) {
       console.error("Error during login:", error);
