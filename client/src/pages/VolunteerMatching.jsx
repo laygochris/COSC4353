@@ -21,25 +21,40 @@ const VolunteerMatching = ({ userRole }) => {
 
   const fetchVolunteers = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/volunteers');
-      const data = await response.json();
-      console.log("Fetched Volunteers:", data); 
-      setVolunteers(data);
+        console.log("Fetching volunteers from backend...");
+        const response = await fetch("http://localhost:5001/api/volunteers");
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const data = await response.json();
+        console.log("Received data from API:", data);
+
+        setVolunteers(data);
     } catch (error) {
-      console.error("Error fetching volunteers:", error);
+        console.error("Error fetching volunteers:", error);
     }
-  };
+};
 
   const fetchMatchedEvents = async (volunteerId) => {
-    try {
-      const response = await fetch(`http://localhost:5001/api/volunteers/${volunteerId}`);
-      const data = await response.json();
-      console.log("Fetched Matched Events:", data.matchedEvents);
-      setSelectedVolunteer(data);
-    } catch (error) {
-      console.error("Error fetching matched events:", error);
+    if (!volunteerId || isNaN(volunteerId)) {
+        console.error("Invalid volunteerId detected:", volunteerId);
+        return;
     }
-  };
+    
+    try {
+        console.log(`Fetching matched events for volunteer ID: ${volunteerId}`);
+        const response = await fetch(`http://localhost:5001/api/volunteers/match/${volunteerId}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Fetched Matched Events:", data);
+        setSelectedVolunteer(data);
+    } catch (error) {
+        console.error("Error fetching matched events:", error);
+    }
+};
 
   if (!isAdmin) {
     return <p className="text-center mt-5">Access Denied. Admins Only.</p>;
@@ -47,7 +62,7 @@ const VolunteerMatching = ({ userRole }) => {
 
   return (
     <Container className="mt-4">
-      <h2 className="text-center mb-4">Volunteer Matching Form (Admin Only)</h2>
+      <h2 className="text-center mb-4">Volunteer Matching Form</h2>
 
       {matchNotification && <Alert className="text-center" variant="success">{matchNotification}</Alert>}
 
@@ -55,13 +70,19 @@ const VolunteerMatching = ({ userRole }) => {
       <Form>
         <Form.Group controlId="volunteerSelect" className="mb-3">
           <Form.Control as="select" onChange={(e) => {
-            const volunteerId = parseInt(e.target.value);
-            console.log("Selected Volunteer ID:", volunteerId); 
+            const volunteerId = parseInt(e.target.value, 10);
+            console.log("Selected Volunteer ID:", volunteerId);
+
+            if (!volunteerId || isNaN(volunteerId)) {
+                console.error("Invalid volunteerId detected:", volunteerId);
+                return;
+            }
+            
             fetchMatchedEvents(volunteerId);
           }}>
             <option value="">Select a Volunteer</option>
             {volunteers.map(volunteer => (
-              <option key={volunteer.id} value={volunteer.id}>{volunteer.name}</option>
+              <option key={volunteer.id} value={volunteer.id}>{volunteer.firstName} {volunteer.lastName}</option>
             ))}
           </Form.Control>
         </Form.Group>
@@ -79,7 +100,7 @@ const VolunteerMatching = ({ userRole }) => {
                     </Card.Text>
                     <div className="mb-2">
                       <strong>Matched Skills: </strong>
-                      {selectedVolunteer.skills?.filter(skill => event.skills.includes(skill)).map(skill => (
+                      {selectedVolunteer.skills?.filter(skill => event.required_skills.includes(skill)).map(skill => (
                         <Badge key={skill} bg="secondary" className="me-1">{skill}</Badge>
                       ))}
                     </div>
