@@ -32,12 +32,24 @@ const VolunteerMatching = ({ userRole }) => {
 
   const fetchMatchedEvents = async (volunteerId) => {
     try {
-      const response = await fetch(`http://localhost:5001/api/volunteers/${volunteerId}`);
+      if (!volunteerId) {
+        setSelectedVolunteer(null);
+        return;
+      }
+  
+      const response = await fetch(`http://localhost:5001/api/volunteers/match/${volunteerId}`);
       const data = await response.json();
-      console.log("Fetched Matched Events:", data.matchedEvents);
-      setSelectedVolunteer(data);
+      console.log("Fetched Matched Events:", data.matchedVolunteers);
+  
+      const matchedVolunteer = data.matchedVolunteers.find(v => v.id === volunteerId);
+      setSelectedVolunteer({
+        ...matchedVolunteer,
+        matchedEvents: data.event ? [data.event] : [] // Ensure matchedEvents is always an array
+      });
+  
     } catch (error) {
       console.error("Error fetching matched events:", error);
+      setSelectedVolunteer(null);
     }
   };
 
@@ -57,11 +69,14 @@ const VolunteerMatching = ({ userRole }) => {
           <Form.Control as="select" onChange={(e) => {
             const volunteerId = parseInt(e.target.value);
             console.log("Selected Volunteer ID:", volunteerId); 
+            setSelectedEvent(null); // Reset selected event
             fetchMatchedEvents(volunteerId);
           }}>
             <option value="">Select a Volunteer</option>
             {volunteers.map(volunteer => (
-              <option key={volunteer.id} value={volunteer.id}>{volunteer.name}</option>
+              <option key={volunteer.id} value={volunteer.id}>
+                {volunteer.firstName} {volunteer.lastName}
+              </option>
             ))}
           </Form.Control>
         </Form.Group>
@@ -79,17 +94,18 @@ const VolunteerMatching = ({ userRole }) => {
                     </Card.Text>
                     <div className="mb-2">
                       <strong>Matched Skills: </strong>
-                      {selectedVolunteer.skills?.filter(skill => event.skills.includes(skill)).map(skill => (
+                      {selectedVolunteer.skills?.filter(skill => event.required_skills.includes(skill)).map(skill => (
                         <Badge key={skill} bg="secondary" className="me-1">{skill}</Badge>
                       ))}
                     </div>
-                    <Button className="w-100 mb-2" onClick={() => setSelectedEvent(event)}>
-                      View Details
+                    <Button 
+                      className="w-100 mb-2" 
+                      onClick={() => setSelectedEvent(selectedEvent?.id === event.id ? null : event)}
+                    >
+                      {selectedEvent?.id === event.id ? "Hide Details" : "View Details"}
                     </Button>
-                    {selectedEvent?.name === event.name && (
-                      <>
-                        <Card.Text className="mt-2">{event.description}</Card.Text>
-                      </>
+                    {selectedEvent?.id === event.id && (
+                      <Card.Text className="mt-2">{event.description}</Card.Text>
                     )}
                   </Card.Body>
                 </Card>

@@ -1,7 +1,10 @@
 const express = require("express");
-const { getVolunteers } = require("../controllers/volunteerController");
 const router = express.Router();
+const volunteerController = require(".server/controllers/volunteercontroller");
 
-router.get("/", getVolunteers); // This should handle GET /api/volunteers
+// Define volunteer routes (without "/api/volunteers" prefix)
+router.get("/", volunteerController.getVolunteers);
+router.get("/match/:volunteerId", volunteerController.getMatchedEventsForVolunteer);
+router.post("/assign", volunteerController.assignVolunteerToEvent);
 
 module.exports = router;

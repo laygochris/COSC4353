@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Container, Card, Row, Col, Badge } from "react-bootstrap";
 
 const Events = () => {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState([]); // Ensure events always starts as an array
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
@@ -13,10 +13,14 @@ const Events = () => {
   const fetchEvents = async () => {
     try {
       const response = await fetch("http://localhost:5001/api/events");
+      if (!response.ok) {
+        throw new Error("Failed to fetch events");
+      }
       const data = await response.json();
-      setEvents(data);
+      setEvents(Array.isArray(data) ? data : []); // Ensure data is always an array
     } catch (error) {
       console.error("Error fetching events:", error);
+      setEvents([]); // Set an empty array on error
     }
   };
 
@@ -33,7 +37,7 @@ const Events = () => {
   const filteredEvents =
     selectedSkills.length > 0
       ? events.filter((event) =>
-          selectedSkills.some((skill) => event.skills.includes(skill))
+          event.required_skills?.some((skill) => selectedSkills.includes(skill))
         )
       : events;
 
@@ -66,42 +70,46 @@ const Events = () => {
         ))}
       </Row>
       <Row className="justify-content-center">
-        {filteredEvents.map((event) => (
-          <Col md={6} key={event.id} className="mb-3">
-            <Card>
-              <Card.Body>
-                <Card.Title>{event.name}</Card.Title>
-                <Card.Subtitle className="mb-2 text-muted">
-                  {event.location}
-                </Card.Subtitle>
-                <Card.Text>
-                  <strong>Date:</strong> {event.date}
-                </Card.Text>
-                <div className="mb-2">
-                  {event.skills.map((skill) => (
-                    <Badge bg="secondary" key={skill} className="me-1">
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
-                <Button
-                  style={{
-                    backgroundColor: "#2C365e",
-                    borderColor: "#8A95A5",
-                    color: "white",
-                  }}
-                  className="w-100"
-                  onClick={() => handleEventClick(event)}
-                >
-                  {selectedEvent?.id === event.id ? "Hide Details" : "View Details"}
-                </Button>
-                {selectedEvent?.id === event.id && (
-                  <Card.Text className="mt-2">{event.description}</Card.Text>
-                )}
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
+        {filteredEvents?.length > 0 ? (
+          filteredEvents.map((event) => (
+            <Col md={6} key={event.id} className="mb-3">
+              <Card>
+                <Card.Body>
+                  <Card.Title>{event.name}</Card.Title>
+                  <Card.Subtitle className="mb-2 text-muted">
+                    {event.location}
+                  </Card.Subtitle>
+                  <Card.Text>
+                    <strong>Date:</strong> {event.date}
+                  </Card.Text>
+                  <div className="mb-2">
+                    {event.required_skills?.map((skill) => (
+                      <Badge bg="secondary" key={skill} className="me-1">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                  <Button
+                    style={{
+                      backgroundColor: "#2C365e",
+                      borderColor: "#8A95A5",
+                      color: "white",
+                    }}
+                    className="w-100"
+                    onClick={() => handleEventClick(event)}
+                  >
+                    {selectedEvent?.id === event.id ? "Hide Details" : "View Details"}
+                  </Button>
+                  {selectedEvent?.id === event.id && (
+                    <Card.Text className="mt-2">{event.description}</Card.Text>
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
+          ))
+        ) : (
+          <p className="text-center mt-4">No events found.</p>
+        )}
       </Row>
     </Container>
   );
