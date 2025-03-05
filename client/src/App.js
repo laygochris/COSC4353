@@ -13,10 +13,9 @@ import VolunteerHistory from './pages/VolunteerHistory';
 import VolunteerMatching from './pages/VolunteerMatching';
 import Events from './pages/Events';
 
-
-
 function App() {
-  const [userRole, setUserRole] = useState("admin"); 
+  const [userRole, setUserRole] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     fetch('/api/hello')
@@ -28,12 +27,12 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <CustomNavbar />
+        <CustomNavbar loggedIn={loggedIn} setLoggedIn={setLoggedIn} setUserRole={setUserRole} />
         <Routes>
           <Route path="/" element={<Navigate to="/home" />} />
           <Route path="/eventManagement" element={<EventManagement />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setUserRole={setUserRole} />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/register" element={<Register />} />
           <Route path="/userProfile" element={<UserProfile />} />

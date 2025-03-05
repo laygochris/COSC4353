@@ -1,6 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const { validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken');
+const key = 'yourSecretKey';
+
 
 // Path to the JSON file
 const filePath = path.join(__dirname, '../data/users.json');
@@ -8,10 +11,10 @@ const filePath = path.join(__dirname, '../data/users.json');
 // Helper function to load users
 const loadUsers = () => {
   try {
-    console.log("Attempting to read file from path:", filePath); // Debugging line
+    // console.log("Attempting to read file from path:", filePath); // Debugging line
     const dataBuffer = fs.readFileSync(filePath);
     const dataJSON = dataBuffer.toString();
-    console.log("Data read from file:", dataJSON); // Debugging line
+    // console.log("Data read from file:", dataJSON); // Debugging line
     if (dataJSON.trim() === "") {
       console.error("Error: users.json file is empty."); // Debugging line
       return [];
@@ -83,7 +86,7 @@ exports.loginUser = (req, res) => {
 
   // Load users from file
   let users = loadUsers();
-  console.log("Loaded users:", users); // Debugging line
+  // console.log("Loaded users:", users); // Debugging line
 
   // Find the user matching the credentials
   const foundUser = users.find(
@@ -93,9 +96,18 @@ exports.loginUser = (req, res) => {
   if (!foundUser) {
     return res.status(401).json({ message: 'Invalid credentials.' });
   }
-
+  //jwt.sign(payload, key, options):
+  //payload: info about user like userID, email 
+  //key: secret key that we store 
+  //options: how long the token is alive for 
+  const token = jwt.sign(
+    { userID: foundUser.id, email: foundUser.email},
+    key,
+    { expiresIn: "1hr" }
+  );
   return res.json({
     message: 'Login successful!',
     user: foundUser,
+    token: token
   });
 };

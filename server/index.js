@@ -5,15 +5,14 @@ const path = require('path');
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Example route
-
+// middleware to parse JSON bodies
 app.use(express.json());
 app.use(cors());
 
-app.get('/', (req, res) => {
-  console.log('Root URL accessed');
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// app.get('/', (req, res) => {
+//   console.log('Root URL accessed');
+//   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// });
 
 const PORT = process.env.PORT || 5001;
 
@@ -21,9 +20,11 @@ const PORT = process.env.PORT || 5001;
 const authRoutes = require('./routes/authRoutes');
 const volunteerRoutes = require('./routes/volunteerRoutes');
 const eventRoutes = require("./routes/eventRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 // Mount the routes
 app.use('/api', authRoutes);  
+app.use('/api/user', userRoutes);
 app.use("/api/volunteers", volunteerRoutes); 
 app.use("/api/events", eventRoutes);
 
