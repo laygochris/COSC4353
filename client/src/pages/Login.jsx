@@ -2,44 +2,43 @@ import React, { useState } from "react";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, Container, Row, Col } from "react-bootstrap";
-// TO-DO: MAKE POP UP IF USER DOES NOT EXIST
-const Login = () => {
+
+const Login = ({ setLoggedIn, setUserRole }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // sending a post request to specified URL
       const response = await fetch("http://localhost:5001/api/login", {
-        method: "POST", // specify that is a POST request
+        method: "POST",
         headers: {
-          // set Content-Type to application/json, indicating
-          // that the request body contains JSON data
           "Content-Type": "application/json",
         },
-        // converts email and pasword to JSON string and includes it in request body
         body: JSON.stringify({ email, password }),
       });
       if (!response.ok) {
         throw new Error("User not found or invalid credentials");
       }
-      // after "trying" wait for backend to respond and display message
+
       const data = await response.json();
       setMessage(data.message);
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.user.id);
+        setLoggedIn(true);
+        setUserRole(data.user.userType); // Update userRole state
+      }
+
       console.log("Logging in with:", { email, password });
       navigate("/home");
     } catch (error) {
       console.error("Error during login:", error);
     }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Logging in with:", { email, password });
-    navigate("/home"); // Redirect after login
   };
 
   return (
