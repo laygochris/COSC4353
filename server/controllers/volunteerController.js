@@ -7,7 +7,7 @@ const router = express.Router();
 const usersFilePath = path.join(__dirname, "../data/users.json");
 const eventsFilePath = path.join(__dirname, "../data/events.json");
 
-// Read JSON files
+// read JSON files
 const readJsonFile = (filePath) => {
     try {
         const data = fs.readFileSync(filePath, "utf8");
@@ -18,7 +18,7 @@ const readJsonFile = (filePath) => {
     }
 };
 
-// Write JSON files
+// write JSON files
 const writeJsonFile = (filePath, data) => {
     try {
         fs.writeFileSync(filePath, JSON.stringify(data, null, 4), "utf8");
@@ -27,7 +27,7 @@ const writeJsonFile = (filePath, data) => {
     }
 };
 
-// Get all volunteers
+// get all volunteers
 const getVolunteers = (req, res) => {
     console.log("Received GET request to /api/volunteers");
 
@@ -40,7 +40,7 @@ const getVolunteers = (req, res) => {
     res.json(volunteers);
 };
 
-// Match volunteers to events based on required skills
+// match volunteers to events based on required skills
 const matchVolunteersToEvent = (req, res) => {
     const volunteerId = parseInt(req.params.volunteerId, 10);
     const users = readJsonFile(usersFilePath);
@@ -59,13 +59,13 @@ const matchVolunteersToEvent = (req, res) => {
             matchedSkills, // Include matched skills in response
             matchPercentage
         };
-    }).filter(event => event.matchPercentage >= 50) // Only return events with 50%+ match
-      .sort((a, b) => b.matchPercentage - a.matchPercentage); // Sort by best match
+    }).filter(event => event.matchPercentage >= 50) // 50%+ match
+      .sort((a, b) => b.matchPercentage - a.matchPercentage); // sort by best match
 
     res.json({ volunteer, matchedEvents });
 };
 
-// Create new volunteer
+// create new volunteer
 const createVolunteer = (req, res) => {
     const users = readJsonFile(usersFilePath);
     const { firstName, lastName, email, skills } = req.body;

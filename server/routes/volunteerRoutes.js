@@ -3,7 +3,6 @@ const { getVolunteers, matchVolunteersToEvent, createVolunteer } = require("../c
 
 const router = express.Router();
 
-// Define routes for volunteers
 router.get("/", getVolunteers); 
 router.get("/match/:volunteerId", matchVolunteersToEvent);
 router.post("/create", createVolunteer);

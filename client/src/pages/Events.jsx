@@ -17,10 +17,10 @@ const Events = () => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const data = await response.json();
-      setEvents(Array.isArray(data) ? data : []); // Ensure events is always an array
+      setEvents(Array.isArray(data) ? data : []); 
     } catch (error) {
       console.error("Error fetching events:", error);
-      setEvents([]); // Set to empty array in case of error
+      setEvents([]); 
     }
   };
 

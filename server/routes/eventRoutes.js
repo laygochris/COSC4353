@@ -12,4 +12,4 @@ router.get("/:id", getEventById);
 // Route to create a new event
 router.post("/", createEvent);
 
-module.exports = router;  // ✅ Ensure this is properly exporting the router
+module.exports = router;  

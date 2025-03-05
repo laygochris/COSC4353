@@ -8,7 +8,6 @@ const VolunteerMatching = ({ userRole }) => {
   const [volunteers, setVolunteers] = useState([]);
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [matchNotification, setMatchNotification] = useState(null);
 
   useEffect(() => {
     if (userRole !== 'admin') {
@@ -56,6 +55,10 @@ const VolunteerMatching = ({ userRole }) => {
     }
 };
 
+  const handleEventClick = (event) => {
+    setSelectedEvent(selectedEvent?.id === event.id ? null : event);
+  };
+
   if (!isAdmin) {
     return <p className="text-center mt-5">Access Denied. Admins Only.</p>;
   }
@@ -63,9 +66,6 @@ const VolunteerMatching = ({ userRole }) => {
   return (
     <Container className="mt-4">
       <h2 className="text-center mb-4">Volunteer Matching Form</h2>
-
-      {matchNotification && <Alert className="text-center" variant="success">{matchNotification}</Alert>}
-
       <h3 className="text-center mt-4">Select a Volunteer</h3>
       <Form>
         <Form.Group controlId="volunteerSelect" className="mb-3">
@@ -100,17 +100,27 @@ const VolunteerMatching = ({ userRole }) => {
                     </Card.Text>
                     <div className="mb-2">
                       <strong>Matched Skills: </strong>
-                      {selectedVolunteer.skills?.filter(skill => event.required_skills.includes(skill)).map(skill => (
-                        <Badge key={skill} bg="secondary" className="me-1">{skill}</Badge>
-                      ))}
+                      {event.matchedSkills && event.matchedSkills.length > 0 ? (
+                        event.matchedSkills.map((skill) => (
+                          <Badge key={skill} bg="success" className="me-1">{skill}</Badge>
+                        ))
+                      ) : (
+                        <Badge bg="danger">No Matched Skills</Badge>
+                      )}
                     </div>
-                    <Button className="w-100 mb-2" onClick={() => setSelectedEvent(event)}>
-                      View Details
+                    <Button
+                      style={{
+                        backgroundColor: "#2C365e",
+                        borderColor: "#8A95A5",
+                        color: "white",
+                      }}
+                      className="w-100"
+                      onClick={() => handleEventClick(event)}
+                    >
+                      {selectedEvent?.id === event.id ? "Hide Details" : "View Details"}
                     </Button>
-                    {selectedEvent?.name === event.name && (
-                      <>
-                        <Card.Text className="mt-2">{event.description}</Card.Text>
-                      </>
+                    {selectedEvent?.id === event.id && (
+                      <Card.Text className="mt-2">{event.description}</Card.Text>
                     )}
                   </Card.Body>
                 </Card>
