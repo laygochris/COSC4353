@@ -84,8 +84,6 @@ const Register = () => {
                     type="text"
                     className="form-control"
                     placeholder="Enter your username"
-                    col
-                    md={6}
                     value={username}
                     onChange={(e) => setUserName(e.target.value)}
                     required
@@ -101,8 +99,6 @@ const Register = () => {
                     type="email"
                     className="form-control"
                     placeholder="Enter your email"
-                    col
-                    md={6}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -117,8 +113,6 @@ const Register = () => {
                     type="password"
                     className="form-control"
                     placeholder="Enter your password"
-                    col
-                    md={6}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
