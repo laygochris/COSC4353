@@ -1,0 +1,16 @@
+[
+  {
+    "fullName": "John Doe",
+    "address": "1223",
+    "skills": [
+      "Time management"
+    ],
+    "preference": "None",
+    "availability": [
+      "2025-03-11"
+    ],
+    "city": "Houston",
+    "state": "TX",
+    "zip": "77777"
+  }
+]

@@ -18,6 +18,8 @@ const UserProfile = () => {
         availability: [],
     });
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const [errors, setErrors] = useState({});
 
     const states = [
@@ -118,11 +120,47 @@ const UserProfile = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (checkPage()) {
-            console.log("Form Submitted Successfully:", userInfo);
-            alert("Profile Updated Successfully!");
+            try {
+                setIsSubmitting(true);
+
+                const response = await fetch("http://localhost:5001/api/user-profile/update", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        userId: userInfo.userId,
+                        fullName: userInfo.fullName,
+                        address: `${userInfo.address1} ${userInfo.address2}`.trim(),
+                        city: userInfo.city,
+                        state: userInfo.state,
+                        zip: userInfo.zip,
+                        skills: userInfo.skills,
+                        preference: userInfo.preferences,
+                        availability: userInfo.availability
+                    })
+                });
+
+                const data = await response.json();
+                console.log("Response Status:", response.status);
+                console.log("Response Data:", data);
+
+                if (!response.ok) {
+                    throw new Error(data.message || "Failed to update profile");
+                }
+
+                alert("Profile Updated Successfully!");
+
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                alert(error.message || "Error updating profile. Please try again.");
+            } finally {
+                setIsSubmitting(false);
+            }
         }
     };
 

@@ -16,12 +16,15 @@ const authRoutes = require('./routes/authRoutes');
 const volunteerRoutes = require('./routes/volunteerRoutes');
 const eventRoutes = require("./routes/eventRoutes");
 const userRoutes = require("./routes/userRoutes");
+const userProfileRoutes = require("./routes/userProfileRoutes");
 
 // Mount the routes
 app.use('/api', authRoutes);  
 app.use('/api/user', userRoutes);
 app.use("/api/volunteers", volunteerRoutes); 
 app.use("/api/events", eventRoutes);
+app.use("/api/user-profile", userProfileRoutes);
+
 
 // Simple test endpoint
 app.get('/api/hello', (req, res) => {

@@ -5,3 +5,4 @@ const jwt = require('jsonwebtoken');
 const key = 'yourSecretKey';
 
 const filePath = path.join(__dirname, '../data/users.json');
+
