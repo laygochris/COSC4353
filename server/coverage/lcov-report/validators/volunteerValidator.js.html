@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for validators/logregValidator.js</title>
+    <title>Code coverage report for validators/volunteerValidator.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../index.html">All files</a> / <a href="index.html">validators</a> logregValidator.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">validators</a> volunteerValidator.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
@@ -78,7 +78,9 @@
 <a name='L13'></a><a href='#L13'>13</a>
 <a name='L14'></a><a href='#L14'>14</a>
 <a name='L15'></a><a href='#L15'>15</a>
-<a name='L16'></a><a href='#L16'>16</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -87,28 +89,32 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const { check } = require('express-validator');
 &nbsp;
-exports.registerValidation = [
+const createVolunteerValidation = [
   check('firstName').notEmpty().withMessage('First name is required'),
   check('lastName').notEmpty().withMessage('Last name is required'),
   check('email').isEmail().withMessage('Valid email is required'),
-  check('username').notEmpty().withMessage('Username is required'),
-  check('password')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters long'),
+  check('skills').isArray().withMessage('Skills must be an array'),
 ];
 &nbsp;
-exports.loginValidation = [
-  check('email').isEmail().withMessage('Valid email is required'),
-  check('password').notEmpty().withMessage('Password is required'),
-];</pre></td></tr></table></pre>
+const matchVolunteersToEventValidation = [
+  check('volunteerId').isInt().withMessage('Volunteer ID must be an integer'),
+];
+&nbsp;
+module.exports = {
+  createVolunteerValidation,
+  matchVolunteersToEventValidation,
+};
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
