@@ -1,19 +1,22 @@
 const express = require('express');
-const router = express.Router();
+const { updateProfileValidation } = require('../validators/userProfileValidator');
 const {
     updateUserProfile,
     getUserProfile,
     deleteUserProfile
 } = require('../controllers/userProfileController');
+const verifyToken = require('../middleware/verifyToken');
+
+const router = express.Router();
 
 // Update or create user profile
-router.put('/update', updateUserProfile);
+router.put('/update', verifyToken, updateProfileValidation, updateUserProfile);
 
 // Get user profile
-router.get('/:userId', getUserProfile);
+router.get('/:userId', verifyToken, getUserProfile);
 
 // Delete user profile
-router.delete('/:userId', deleteUserProfile);
+router.delete('/:userId', verifyToken, deleteUserProfile);
 
 // Test route
 router.get('/test', (req, res) => {

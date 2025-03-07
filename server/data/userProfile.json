@@ -12,5 +12,19 @@
     "city": "Missouri City ",
     "state": "TX",
     "zip": "77657"
+  },
+  {
+    "userId": 1,
+    "fullName": "John Doe",
+    "address": "123 Main St",
+    "city": "Houston",
+    "state": "TX",
+    "zip": "77001",
+    "skills": [
+      "JavaScript",
+      "Node.js"
+    ],
+    "preference": "Remote",
+    "availability": "Full-time"
   }
 ]

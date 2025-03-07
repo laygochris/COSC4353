@@ -4,24 +4,21 @@ const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const key = process.env.JWT_SECRET || 'yourSecretKey';
 
-
 // Path to the JSON file
 const filePath = path.join(__dirname, '../data/users.json');
 
 // Helper function to load users
 const loadUsers = () => {
   try {
-    // console.log("Attempting to read file from path:", filePath); // Debugging line
     const dataBuffer = fs.readFileSync(filePath);
     const dataJSON = dataBuffer.toString();
-    // console.log("Data read from file:", dataJSON); // Debugging line
     if (dataJSON.trim() === "") {
-      console.error("Error: users.json file is empty."); // Debugging line
+      console.error("Error: users.json file is empty.");
       return [];
     }
     return JSON.parse(dataJSON);
   } catch (error) {
-    console.error("Error reading users file:", error); // Debugging line
+    console.error("Error reading users file:", error);
     return [];
   }
 };
@@ -43,12 +40,13 @@ exports.registerUser = (req, res) => {
 
   // Load current users from file
   let users = loadUsers();
-  // console.log(users);
 
   // Check for duplicate username or email
   const existingUser = users.find(
     (u) => u.username === username || u.email === email
   );
+
+
   if (existingUser) {
     return res.status(400).json({ message: 'User already exists.' });
   }
@@ -79,6 +77,11 @@ exports.registerUser = (req, res) => {
 
 // Login User Controller
 exports.loginUser = (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  } 
+
   const { email, password } = req.body;
   const users = require('../data/users.json');
 
