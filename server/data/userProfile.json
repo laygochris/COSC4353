@@ -1,16 +1,16 @@
 [
   {
-    "fullName": "John Doe",
-    "address": "1223",
+    "fullName": "John",
+    "address": "321 John St",
     "skills": [
       "Time management"
     ],
     "preference": "None",
     "availability": [
-      "2025-03-11"
+      "2025-03-13"
     ],
-    "city": "Houston",
+    "city": "Missouri City ",
     "state": "TX",
-    "zip": "77777"
+    "zip": "77657"
   }
 ]
