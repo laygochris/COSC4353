@@ -17,6 +17,7 @@ const eventRoutes = require("./routes/eventRoutes");
 const userRoutes = require("./routes/userRoutes");
 const userProfileRoutes = require("./routes/userProfileRoutes");
 const historyRoutes = require("./routes/historyRoutes"); 
+const notificationRoutes = require("./routes/notificationRoutes"); 
 
 // Mount the routes
 app.use('/api', authRoutes);
@@ -25,6 +26,7 @@ app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/user-profile", userProfileRoutes);
 app.use("/api/volunteer-history", historyRoutes); 
+app.use("/api/notifications", notificationRoutes);
 
 // Simple test endpoint
 app.get('/api/hello', (req, res) => {

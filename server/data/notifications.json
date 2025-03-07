@@ -1,0 +1,23 @@
+[
+    {
+      "id": 1,
+      "message": "You have been assigned to the 'Community Cleanup' event!",
+      "type": "success"
+    },
+    {
+      "id": 2,
+      "message": "Update: 'Beach Cleanup' event time has changed to 10:00 AM.",
+      "type": "info"
+    },
+    {
+      "id": 3,
+      "message": "Reminder: 'Tutoring Program' event starts tomorrow at 2:00 PM.",
+      "type": "warning"
+    },
+    {
+      "id": 4,
+      "message": "New event added: 'Food Bank Assistance' - Sign up now!",
+      "type": "success"
+    }
+  ]
+  
