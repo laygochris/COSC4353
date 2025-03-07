@@ -26,9 +26,9 @@ describe('User Profile Controller', () => {
         city: 'Houston',
         state: 'TX',
         zip: '77001',
-        skills: ['JavaScript', 'Node.js'],
+        skills: ['Problem Solving'],
         preference: 'Remote',
-        availability: 'Full-time',
+        availability: ['2025-03-07']
       });
 
     expect(response.status).toBe(200);

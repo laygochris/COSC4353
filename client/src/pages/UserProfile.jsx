@@ -123,47 +123,45 @@ const UserProfile = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (checkPage()) {
-            try {
-                setIsSubmitting(true);
+        const token = localStorage.getItem("token");
+        if (!token) {
+            alert("You are not authenticated. Please log in.");
+            return;
+        }
 
-                const response = await fetch("http://localhost:5001/api/user-profile/update", {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        userId: userInfo.userId,
-                        fullName: userInfo.fullName,
-                        address: `${userInfo.address1} ${userInfo.address2}`.trim(),
-                        city: userInfo.city,
-                        state: userInfo.state,
-                        zip: userInfo.zip,
-                        skills: userInfo.skills,
-                        preference: userInfo.preferences,
-                        availability: userInfo.availability
-                    })
-                });
+        try {
+            const response = await fetch("http://localhost:5001/api/user-profile/update", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    userId: localStorage.getItem("userId"),
+                    fullName: userInfo.fullName,
+                    address: `${userInfo.address1} ${userInfo.address2}`.trim(),
+                    city: userInfo.city,
+                    state: userInfo.state,
+                    zip: userInfo.zip,
+                    skills: userInfo.skills,
+                    preference: userInfo.preferences,
+                    availability: userInfo.availability
+                })
+            });
 
-                const data = await response.json();
-                console.log("Response Status:", response.status);
-                console.log("Response Data:", data);
-
-                if (!response.ok) {
-                    throw new Error(data.message || "Failed to update profile");
-                }
-
-                alert("Profile Updated Successfully!");
-
-            } catch (error) {
-                console.error("Error updating profile:", error);
-                alert(error.message || "Error updating profile. Please try again.");
-            } finally {
-                setIsSubmitting(false);
+            if (!response.ok) {
+                throw new Error("Failed to update profile");
             }
+
+            const data = await response.json();
+            console.log("Profile updated:", data);
+            alert("Profile Updated Successfully!");
+
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            alert("Error updating profile. Please try again.");
         }
     };
-
 
     const handleSkillsChange = (selectedOptions) => {
         setUserInfo((prev) => ({
