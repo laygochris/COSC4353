@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; 
+import { useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/VolunteerHistory.css";
 
 const VolunteerHistory = ({ volunteerId: propVolunteerId, userEmail }) => {
-  const { volunteerId: paramVolunteerId } = useParams(); 
-  const [volunteerId, setVolunteerId] = useState(propVolunteerId || paramVolunteerId);
+  const { volunteerId: paramVolunteerId } = useParams();
+  const [volunteerId, setVolunteerId] = useState(
+    propVolunteerId || paramVolunteerId || localStorage.getItem("userId")
+  );
   const [volunteerEvents, setVolunteerEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -15,7 +17,9 @@ const VolunteerHistory = ({ volunteerId: propVolunteerId, userEmail }) => {
       const fetchVolunteerId = async () => {
         try {
           console.log(`Fetching volunteer ID for email: ${userEmail}`);
-          const response = await fetch(`http://localhost:5001/api/volunteers/me?email=${userEmail}`);
+          const response = await fetch(
+            `http://localhost:5001/api/volunteers/me?email=${userEmail}`
+          );
           if (!response.ok) throw new Error("Failed to fetch volunteer ID");
 
           const data = await response.json();
@@ -42,9 +46,12 @@ const VolunteerHistory = ({ volunteerId: propVolunteerId, userEmail }) => {
     }
 
     const fetchVolunteerHistory = async () => {
+      const token = localStorage.getItem("token");
       try {
         console.log(`Fetching history for volunteer ID: ${volunteerId}`);
-        const response = await fetch(`http://localhost:5001/api/events/volunteer/${volunteerId}`);
+        const response = await fetch(
+          `http://localhost:5001/api/events/volunteer/${volunteerId}`
+        );
 
         if (!response.ok) throw new Error("Failed to fetch volunteer history");
 
@@ -87,9 +94,13 @@ const VolunteerHistory = ({ volunteerId: propVolunteerId, userEmail }) => {
                   <td>{event.description}</td>
                   <td>{event.location}</td>
                   <td>
-                    {event.required_skills && event.required_skills.length > 0 ? (
+                    {event.required_skills &&
+                    event.required_skills.length > 0 ? (
                       event.required_skills.map((skill, skillIndex) => (
-                        <span key={skillIndex} className="badge bg-secondary me-1">
+                        <span
+                          key={skillIndex}
+                          className="badge bg-secondary me-1"
+                        >
                           {skill}
                         </span>
                       ))
@@ -98,25 +109,35 @@ const VolunteerHistory = ({ volunteerId: propVolunteerId, userEmail }) => {
                     )}
                   </td>
                   <td>
-                    <span className="badge"
+                    <span
+                      className="badge"
                       style={{
                         backgroundColor:
-                          event.urgency === "High" ? "#931621" :
-                          event.urgency === "Medium" ? "#D9A404" : "#60993E",
+                          event.urgency === "High"
+                            ? "#931621"
+                            : event.urgency === "Medium"
+                            ? "#D9A404"
+                            : "#60993E",
                         color: "white",
-                      }}>
+                      }}
+                    >
                       {event.urgency}
                     </span>
                   </td>
                   <td>{event.date}</td>
                   <td>
-                    <span className="badge"
+                    <span
+                      className="badge"
                       style={{
                         backgroundColor:
-                          event.status === "Completed" ? "#60993E" :
-                          event.status === "Upcoming" ? "#2C365E" : "#931621",
+                          event.status === "Completed"
+                            ? "#60993E"
+                            : event.status === "Upcoming"
+                            ? "#2C365E"
+                            : "#931621",
                         color: "white",
-                      }}>
+                      }}
+                    >
                       {event.status}
                     </span>
                   </td>
