@@ -1,53 +1,58 @@
 [
     {
-        "id": 1,
-        "name": "Community Food Drive",
-        "date": "2025-04-05",
-        "location": "Downtown Houston, TX",
-        "required_skills": ["Teamwork", "Organization", "Communication"],
-        "urgency": "High",
-        "description": "Help distribute food to families in need. Volunteers will assist with sorting, packing, and distributing food items.",
-        "assignedVolunteers": [] 
+      "id": 1,
+      "name": "Community Food Drive",
+      "date": "2025-04-05",
+      "location": "Downtown Houston, TX",
+      "required_skills": ["Teamwork", "Organization", "Communication"],
+      "urgency": "High",
+      "status": "Upcoming",
+      "description": "Help distribute food to families in need. Volunteers will assist with sorting, packing, and distributing food items.",
+      "assignedVolunteers": [3]
     },
     {
-        "id": 2,
-        "name": "Park Cleanup Initiative",
-        "date": "2025-03-20",
-        "location": "Buffalo Bayou Park, Houston",
-        "required_skills": ["Teamwork", "Leadership", "Organization"],
-        "urgency": "Medium",
-        "description": "Join us in cleaning up the park! Volunteers will remove litter, plant trees, and maintain green spaces.",
-        "assignedVolunteers": []
+      "id": 2,
+      "name": "Park Cleanup Initiative",
+      "date": "2025-03-20",
+      "location": "Buffalo Bayou Park, Houston",
+      "required_skills": ["Teamwork", "Leadership", "Organization"],
+      "urgency": "Medium",
+      "status": "Completed",
+      "description": "Join us in cleaning up the park! Volunteers will remove litter, plant trees, and maintain green spaces.",
+      "assignedVolunteers": [3]
     },
     {
-        "id": 3,
-        "name": "Leadership Workshop",
-        "date": "2025-05-10",
-        "location": "University of Houston",
-        "required_skills": ["Leadership", "Communication", "Organization"],
-        "urgency": "Low",
-        "description": "A workshop designed to develop leadership and communication skills for young professionals.",
-        "assignedVolunteers": []
+      "id": 3,
+      "name": "Leadership Workshop",
+      "date": "2025-05-10",
+      "location": "University of Houston",
+      "required_skills": ["Leadership", "Communication", "Organization"],
+      "urgency": "Low",
+      "status": "Upcoming",
+      "description": "A workshop designed to develop leadership and communication skills for young professionals.",
+      "assignedVolunteers": [3]
     },
     {
-        "id": 4,
-        "name": "Disaster Relief Effort",
-        "date": "2025-06-01",
-        "location": "Houston, TX",
-        "required_skills": ["Teamwork", "Leadership", "Communication"],
-        "urgency": "Very High",
-        "description": "Assist in providing immediate relief to disaster-affected areas. Volunteers will help distribute supplies and assist with coordination efforts.",
-        "assignedVolunteers": []
+      "id": 4,
+      "name": "Disaster Relief Effort",
+      "date": "2025-06-01",
+      "location": "Houston, TX",
+      "required_skills": ["Teamwork", "Leadership", "Communication"],
+      "urgency": "Very High",
+      "status": "Canceled",
+      "description": "Assist in providing immediate relief to disaster-affected areas. Volunteers will help distribute supplies and assist with coordination efforts.",
+      "assignedVolunteers": []
     },
     {
-        "id": 5,
-        "name": "Animal Shelter Volunteer Day",
-        "date": "2025-04-25",
-        "location": "Houston Animal Shelter",
-        "required_skills": ["Animal Care", "Teamwork", "Organization"],
-        "urgency": "Medium",
-        "description": "Help take care of rescued animals by cleaning enclosures, feeding, and assisting with pet adoptions.",
-        "assignedVolunteers": []
+      "id": 5,
+      "name": "Animal Shelter Volunteer Day",
+      "date": "2025-04-25",
+      "location": "Houston Animal Shelter",
+      "required_skills": ["Animal Care", "Teamwork", "Organization"],
+      "urgency": "Medium",
+      "status": "Upcoming",
+      "description": "Help take care of rescued animals by cleaning enclosures, feeding, and assisting with pet adoptions.",
+      "assignedVolunteers": []
     }
-]
-
+  ]
+  

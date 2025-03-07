@@ -3,9 +3,8 @@ const cors = require('cors');
 require('dotenv').config();
 const path = require('path');
 const app = express();
-app.use(express.static(path.join(__dirname, 'public')));
 
-// middleware to parse JSON bodies
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(cors());
 
@@ -17,14 +16,15 @@ const volunteerRoutes = require('./routes/volunteerRoutes');
 const eventRoutes = require("./routes/eventRoutes");
 const userRoutes = require("./routes/userRoutes");
 const userProfileRoutes = require("./routes/userProfileRoutes");
+const historyRoutes = require("./routes/historyRoutes"); 
 
 // Mount the routes
-app.use('/api', authRoutes);  
+app.use('/api', authRoutes);
 app.use('/api/user', userRoutes);
-app.use("/api/volunteers", volunteerRoutes); 
+app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/user-profile", userProfileRoutes);
-
+app.use("/api/volunteer-history", historyRoutes); 
 
 // Simple test endpoint
 app.get('/api/hello', (req, res) => {

@@ -1,59 +1,65 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom"; 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/VolunteerHistory.css"; 
+import "../styles/VolunteerHistory.css";
 
-const VolunteerHistory = () => {
-  const [volunteerData, setVolunteerData] = useState([]);
+const VolunteerHistory = ({ volunteerId: propVolunteerId, userEmail }) => {
+  const { volunteerId: paramVolunteerId } = useParams(); 
+  const [volunteerId, setVolunteerId] = useState(propVolunteerId || paramVolunteerId);
+  const [volunteerEvents, setVolunteerEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // Fetch volunteerId from VolunteerController if not available
   useEffect(() => {
-    const fetchData = async () => {
-      const data = [
-        {
-          id: 1,
-          eventName: "Community Cleanup",
-          eventDescription: "Join us in cleaning up the coastline to protect marine life.",
-          location: "Galveston, TX",
-          requiredSkills: ["Teamwork", "Leadership"],
-          urgency: "High",
-          eventDate: "08/16/24",
-          status: "Completed",
-        },
-        {
-          id: 2,
-          eventName: "Food Bank Assistance",
-          eventDescription: "Help distribute food to families in need.",
-          location: "Houston, Texas",
-          requiredSkills: ["Communication", "Organization"],
-          urgency: "Medium",
-          eventDate: "07/20/24",
-          status: "Upcoming",
-        },
-        {
-          id: 3,
-          eventName: "Tutoring Program",
-          eventDescription: "Replant trees and maintain green spaces.",
-          location: "Pearland, TX",
-          requiredSkills: ["Communication"],
-          urgency: "High",
-          eventDate: "10/28/24",
-          status: "Completed",
-        },
-        {
-          id: 4,
-          eventName: "Animal Shelter Help",
-          eventDescription: "Assist in caring for rescued animals.",
-          location: "Sugar Land, TX",
-          requiredSkills: ["Animal Care"],
-          urgency: "Low",
-          eventDate: "12/05/24",
-          status: "Canceled",
-        },
-      ];
-      setVolunteerData(data);
+    if (!volunteerId && userEmail) {
+      const fetchVolunteerId = async () => {
+        try {
+          console.log(`Fetching volunteer ID for email: ${userEmail}`);
+          const response = await fetch(`http://localhost:5001/api/volunteers/me?email=${userEmail}`);
+          if (!response.ok) throw new Error("Failed to fetch volunteer ID");
+
+          const data = await response.json();
+          console.log("Volunteer Data:", data);
+
+          if (data.volunteerId) {
+            setVolunteerId(data.volunteerId);
+          } else {
+            console.error("volunteerId is missing from API response.");
+          }
+        } catch (error) {
+          console.error("Error fetching volunteerId:", error);
+        }
+      };
+      fetchVolunteerId();
+    }
+  }, [volunteerId, userEmail]);
+
+  // Fetch volunteer history when volunteerId is available
+  useEffect(() => {
+    if (!volunteerId || isNaN(volunteerId)) {
+      console.error("Invalid volunteerId detected:", volunteerId);
+      return;
+    }
+
+    const fetchVolunteerHistory = async () => {
+      try {
+        console.log(`Fetching history for volunteer ID: ${volunteerId}`);
+        const response = await fetch(`http://localhost:5001/api/events/volunteer/${volunteerId}`);
+
+        if (!response.ok) throw new Error("Failed to fetch volunteer history");
+
+        const data = await response.json();
+        console.log("Fetched data:", data);
+        setVolunteerEvents(data);
+      } catch (error) {
+        console.error("Error fetching volunteer history:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchData();
-  }, []);
+    fetchVolunteerHistory();
+  }, [volunteerId]);
 
   return (
     <div className="container mt-5">
@@ -73,16 +79,16 @@ const VolunteerHistory = () => {
             </tr>
           </thead>
           <tbody>
-            {volunteerData.length > 0 ? (
-              volunteerData.map((event, index) => (
+            {volunteerEvents.length > 0 ? (
+              volunteerEvents.map((event, index) => (
                 <tr key={event.id}>
                   <td>{index + 1}</td>
-                  <td>{event.eventName}</td>
-                  <td>{event.eventDescription}</td>
+                  <td>{event.name}</td>
+                  <td>{event.description}</td>
                   <td>{event.location}</td>
                   <td>
-                    {Array.isArray(event.requiredSkills) && event.requiredSkills.length > 0 ? (
-                      event.requiredSkills.map((skill, skillIndex) => (
+                    {event.required_skills && event.required_skills.length > 0 ? (
+                      event.required_skills.map((skill, skillIndex) => (
                         <span key={skillIndex} className="badge bg-secondary me-1">
                           {skill}
                         </span>
@@ -92,37 +98,27 @@ const VolunteerHistory = () => {
                     )}
                   </td>
                   <td>
-                  <span
-                    className="badge"
-                    style={
-                      event.urgency === "High"
-                        ? { backgroundColor: '#931621', borderColor: '#8A95A5', color: 'white' } 
-                        : event.urgency === "Medium"
-                        ? { backgroundColor: '#D9A404', borderColor: '#FFA000', color: 'white' }  
-                        : event.urgency === "Low"
-                        ? { backgroundColor: '#60993E', borderColor: '#8A95A5', color: 'white' } 
-                        : {}
-                    }
-                  >
-                    {event.urgency}
-                  </span>
+                    <span className="badge"
+                      style={{
+                        backgroundColor:
+                          event.urgency === "High" ? "#931621" :
+                          event.urgency === "Medium" ? "#D9A404" : "#60993E",
+                        color: "white",
+                      }}>
+                      {event.urgency}
+                    </span>
                   </td>
-                  <td>{event.eventDate}</td>
+                  <td>{event.date}</td>
                   <td>
-                  <span
-                    className="badge"
-                    style={
-                      event.status === "Completed"
-                        ? { backgroundColor: '#60993E', borderColor: '#8A95A5', color: 'white' } 
-                        : event.status === "Upcoming"
-                        ? { backgroundColor: '#2C365E', borderColor: '#8A95A5', color: 'white' } 
-                        : event.status === "Canceled"
-                        ? { backgroundColor: '#931621', borderColor: '#8A95A5', color: 'white' } 
-                        : { backgroundColor: '#8A95A5', borderColor: '#EDEEC9', color: 'white' } 
-                    }
-                  >
-                    {event.status}
-                  </span>
+                    <span className="badge"
+                      style={{
+                        backgroundColor:
+                          event.status === "Completed" ? "#60993E" :
+                          event.status === "Upcoming" ? "#2C365E" : "#931621",
+                        color: "white",
+                      }}>
+                      {event.status}
+                    </span>
                   </td>
                 </tr>
               ))

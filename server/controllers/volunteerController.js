@@ -40,6 +40,23 @@ const getVolunteers = (req, res) => {
     res.json(volunteers);
 };
 
+const getVolunteerByEmail = (req, res) => {
+    const users = readJsonFile(usersFilePath);
+    const { email } = req.query; // Get email from query params
+
+    if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+    }
+
+    const volunteer = users.find(user => user.email === email && user.userType === "volunteer");
+
+    if (!volunteer) {
+        return res.status(404).json({ message: "Volunteer not found" });
+    }
+
+    res.json({ volunteerId: volunteer.id });
+};
+
 // match volunteers to events based on required skills
 const matchVolunteersToEvent = (req, res) => {
     const volunteerId = parseInt(req.params.volunteerId, 10);
@@ -97,5 +114,6 @@ const createVolunteer = (req, res) => {
 module.exports = {
     getVolunteers,
     matchVolunteersToEvent,
-    createVolunteer
+    createVolunteer,
+    getVolunteerByEmail // Export the new function
 };

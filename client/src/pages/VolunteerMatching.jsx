@@ -8,6 +8,7 @@ const VolunteerMatching = ({ userRole }) => {
   const [volunteers, setVolunteers] = useState([]);
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [matchNotification, setMatchNotification] = useState(null);
 
   useEffect(() => {
     if (userRole !== 'admin') {
@@ -20,43 +21,45 @@ const VolunteerMatching = ({ userRole }) => {
 
   const fetchVolunteers = async () => {
     try {
-        console.log("Fetching volunteers from backend...");
-        const response = await fetch("http://localhost:5001/api/volunteers");
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
-        const data = await response.json();
-        console.log("Received data from API:", data);
-
-        setVolunteers(data);
+      console.log("Fetching volunteers from backend...");
+      const response = await fetch("http://localhost:5001/api/volunteers");
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      
+      const data = await response.json();
+      console.log("Received data from API:", data);
+      
+      setVolunteers(data);
     } catch (error) {
-        console.error("Error fetching volunteers:", error);
+      console.error("Error fetching volunteers:", error);
     }
-};
+  };
 
   const fetchMatchedEvents = async (volunteerId) => {
     if (!volunteerId || isNaN(volunteerId)) {
-        console.error("Invalid volunteerId detected:", volunteerId);
-        return;
+      console.error("Invalid volunteerId detected:", volunteerId);
+      return;
     }
     
     try {
-        console.log(`Fetching matched events for volunteer ID: ${volunteerId}`);
-        const response = await fetch(`http://localhost:5001/api/volunteers/match/${volunteerId}`);
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("Fetched Matched Events:", data);
-        setSelectedVolunteer(data);
+      console.log(`Fetching matched events for volunteer ID: ${volunteerId}`);
+      const response = await fetch(`http://localhost:5001/api/volunteers/match/${volunteerId}`);
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      
+      const data = await response.json();
+      console.log("Fetched Matched Events:", data);
+      setSelectedVolunteer({ ...data, name: `${data.volunteer?.firstName || ''} ${data.volunteer?.lastName || ''}` });
     } catch (error) {
-        console.error("Error fetching matched events:", error);
+      console.error("Error fetching matched events:", error);
     }
-};
+  };
 
   const handleEventClick = (event) => {
     setSelectedEvent(selectedEvent?.id === event.id ? null : event);
+  };
+
+  const handleMatchNotification = (volunteerName, eventName) => {
+    setMatchNotification(`${volunteerName} has been matched with ${eventName}.`);
+    setTimeout(() => setMatchNotification(null), 2000);
   };
 
   if (!isAdmin) {
@@ -66,16 +69,17 @@ const VolunteerMatching = ({ userRole }) => {
   return (
     <Container className="mt-4">
       <h2 className="text-center mb-4">Volunteer Matching Form</h2>
+      {matchNotification && <Alert variant="success" className="text-center">{matchNotification}</Alert>}
       <h3 className="text-center mt-4">Select a Volunteer</h3>
       <Form>
         <Form.Group controlId="volunteerSelect" className="mb-3">
           <Form.Control as="select" onChange={(e) => {
             const volunteerId = parseInt(e.target.value, 10);
             console.log("Selected Volunteer ID:", volunteerId);
-
+            
             if (!volunteerId || isNaN(volunteerId)) {
-                console.error("Invalid volunteerId detected:", volunteerId);
-                return;
+              console.error("Invalid volunteerId detected:", volunteerId);
+              return;
             }
             
             fetchMatchedEvents(volunteerId);
@@ -119,8 +123,13 @@ const VolunteerMatching = ({ userRole }) => {
                     >
                       {selectedEvent?.id === event.id ? "Hide Details" : "View Details"}
                     </Button>
-                    {selectedEvent?.id === event.id && (
-                      <Card.Text className="mt-2">{event.description}</Card.Text>
+                    {selectedEvent?.name === event.name && (
+                      <>
+                        <Card.Text className="mt-2">{event.description}</Card.Text>
+                        <Button className="w-100 mt-2" style={{ backgroundColor: '#60993E', borderColor: '#8A95A5', color: 'white' }} onClick={() => {
+                          handleMatchNotification(selectedVolunteer.name, event.name);
+                        }}>Match</Button>
+                      </>
                     )}
                   </Card.Body>
                 </Card>
