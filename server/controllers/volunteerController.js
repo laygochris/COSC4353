@@ -40,23 +40,6 @@ const getVolunteers = (req, res) => {
     res.json(volunteers);
 };
 
-const getVolunteerByEmail = (req, res) => {
-    const users = readJsonFile(usersFilePath);
-    const { email } = req.query; // Get email from query params
-
-    if (!email) {
-        return res.status(400).json({ message: "Email is required" });
-    }
-
-    const volunteer = users.find(user => user.email === email && user.userType === "volunteer");
-
-    if (!volunteer) {
-        return res.status(404).json({ message: "Volunteer not found" });
-    }
-
-    res.json({ volunteerId: volunteer.id });
-};
-
 // match volunteers to events based on required skills
 const matchVolunteersToEvent = (req, res) => {
     const volunteerId = parseInt(req.params.volunteerId, 10);
@@ -82,35 +65,6 @@ const matchVolunteersToEvent = (req, res) => {
     res.json({ volunteer, matchedEvents });
 };
 
-// create new volunteer
-const createVolunteer = (req, res) => {
-    const users = readJsonFile(usersFilePath);
-    const { firstName, lastName, email, skills } = req.body;
-
-    if (!firstName || !lastName || !email || !skills) {
-        return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    const existingVolunteer = users.find(user => user.email === email);
-    if (existingVolunteer) {
-        return res.status(400).json({ message: "Volunteer with this email already exists" });
-    }
-
-    const newVolunteer = {
-        id: users.length > 0 ? Math.max(...users.map(user => user.id)) + 1 : 1,
-        firstName,
-        lastName,
-        email,
-        userType: "volunteer",
-        skills: Array.isArray(skills) ? skills : [skills] 
-    };
-
-    users.push(newVolunteer);
-    writeJsonFile(usersFilePath, users);
-
-    res.status(201).json(newVolunteer);
-};
-
 const getVolunteerById = (req, res) => {
     const users = readJsonFile(usersFilePath);
     const { id } = req.params; // Get ID from URL params
@@ -131,6 +85,5 @@ const getVolunteerById = (req, res) => {
 module.exports = {
     getVolunteers,
     matchVolunteersToEvent,
-    createVolunteer,
     getVolunteerById, 
 };

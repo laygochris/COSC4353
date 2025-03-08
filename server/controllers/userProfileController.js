@@ -59,7 +59,6 @@ exports.updateUserProfile = (req, res) => {
         return res.status(404).json({ message: 'User not found in users.json.' });
     }
 
-
     // update
     existingUser.firstName = fullName.split(" ")[0] || existingUser.firstName;
     existingUser.lastName = fullName.split(" ")[1] || existingUser.lastName;

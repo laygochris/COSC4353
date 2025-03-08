@@ -16,24 +16,22 @@ const loadNotifications = () => {
 
 // GET: Fetch notifications for the logged-in user
  const getUserNotifications = (req, res) => {
-  const userID = req.user.id; // ✅ Get user ID from token
+  const userID = req.user.id; 
 
   if (!userID) {
     return res.status(401).json({ message: "Unauthorized: User ID missing" });
   }
 
-  const notifications = loadNotifications(); // Load notifications from JSON
+  const notifications = loadNotifications(); 
 
-  // Debugging logs to check the structure
   console.log(`User ID from token: ${userID}`);
   console.log(`All Notifications Before Filtering:`, JSON.stringify(notifications, null, 2));
 
-  // Ensure `userIDs` is an array before filtering
   const userNotifications = notifications.filter(notification => 
     Array.isArray(notification.userIDs) && notification.userIDs.includes(userID)
   );
 
-  console.log(`Filtered Notifications for user ${userID}:`, JSON.stringify(userNotifications, null, 2)); // ✅ Debugging log
+  console.log(`Filtered Notifications for user ${userID}:`, JSON.stringify(userNotifications, null, 2)); 
 
   res.json(userNotifications);
 };
