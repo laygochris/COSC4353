@@ -6,7 +6,12 @@ const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
-app.use(cors());
+
+// ✅ Fix CORS Issue (Explicitly Allow React Frontend)
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true
+}));
 
 const PORT = process.env.PORT || 5001;
 

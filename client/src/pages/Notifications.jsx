@@ -38,27 +38,42 @@ const NotificationItem = ({ notification, onDismiss }) => {
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
 
-  // Fetch notifications from backend
+  // Fetch notifications from backend (user-specific)
   const fetchNotifications = useCallback(async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/notifications");
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("User not authenticated");
+  
+      const response = await axios.get("http://localhost:5001/api/notifications", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      console.log("Received Notifications from Backend:", response.data); 
+  
       setNotifications(response.data);
     } catch (error) {
-      console.error("Error fetching notifications", error);
+      console.error("Error fetching notifications:", error.response?.data?.message || error.message);
     }
   }, []);
+  
 
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
 
-  // Handle dismiss notification
+  // Handle dismiss notification (user-specific)
   const handleDismiss = useCallback(async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/notifications/${id}`);
-      setNotifications((prev) => prev.filter(notification => notification.id !== id));
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("User not authenticated");
+
+      await axios.delete(`http://localhost:5001/api/notifications/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setNotifications((prev) => prev.filter((notification) => notification.id !== id));
     } catch (error) {
-      console.error("Error dismissing notification", error);
+      console.error("Error dismissing notification:", error.response?.data?.message || error.message);
     }
   }, []);
 

@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const volunteerHistoryController = require("../controllers/historyController");
+const historyController = require("../controllers/historyController"); // ✅ Import this
 const verifyToken = require('../middleware/verifyToken');
 
 
 // Ensure this endpoint is properly set up
-router.get("/:volunteerId", verifyToken, volunteerHistoryController.getVolunteerHistory);
+router.get("/", verifyToken, historyController.getVolunteerHistory);
 
 // ✅ Optional: Get all volunteer history
-router.get("/", volunteerHistoryController.getAllEvents);
+router.get("/", historyController.getAllEvents);
 
 module.exports = router;

@@ -111,9 +111,26 @@ const createVolunteer = (req, res) => {
     res.status(201).json(newVolunteer);
 };
 
+const getVolunteerById = (req, res) => {
+    const users = readJsonFile(usersFilePath);
+    const { id } = req.params; // Get ID from URL params
+
+    if (!id) {
+        return res.status(400).json({ message: "Volunteer ID is required" });
+    }
+
+    const volunteer = users.find(user => user.id.toString() === id && user.userType === "volunteer");
+
+    if (!volunteer) {
+        return res.status(404).json({ message: "Volunteer not found" });
+    }
+
+    res.json({ volunteerId: volunteer.id });
+};
+
 module.exports = {
     getVolunteers,
     matchVolunteersToEvent,
     createVolunteer,
-    getVolunteerByEmail // Export the new function
+    getVolunteerById, 
 };

@@ -1,55 +1,96 @@
 const fs = require("fs");
 const path = require("path");
 
-const notificationsFilePath = path.join(__dirname, "../data/notifications.json");
+const DATA_FILE = path.join(__dirname, "../data/notifications.json");
 
-// Helper function to read notifications
-const readNotifications = () => {
+// Load notifications from JSON
+const loadNotifications = () => {
   try {
-    if (!fs.existsSync(notificationsFilePath)) {
-      fs.writeFileSync(notificationsFilePath, "[]", "utf8");
-    }
-    const data = fs.readFileSync(notificationsFilePath, "utf8");
+    const data = fs.readFileSync(DATA_FILE);
     return JSON.parse(data);
-  } catch (err) {
-    console.error("Error reading notifications file:", err);
+  } catch (error) {
+    console.error("Error loading notifications:", error);
     return [];
   }
 };
 
-// Helper function to write notifications
-const writeNotifications = (notifications) => {
-  try {
-    fs.writeFileSync(notificationsFilePath, JSON.stringify(notifications, null, 2), "utf8");
-  } catch (err) {
-    console.error("Error writing notifications file:", err);
+// GET: Fetch notifications for the logged-in user
+ const getUserNotifications = (req, res) => {
+  const userID = req.user.id; // ✅ Get user ID from token
+
+  if (!userID) {
+    return res.status(401).json({ message: "Unauthorized: User ID missing" });
   }
+
+  const notifications = loadNotifications(); // Load notifications from JSON
+
+  // Debugging logs to check the structure
+  console.log(`User ID from token: ${userID}`);
+  console.log(`All Notifications Before Filtering:`, JSON.stringify(notifications, null, 2));
+
+  // Ensure `userIDs` is an array before filtering
+  const userNotifications = notifications.filter(notification => 
+    Array.isArray(notification.userIDs) && notification.userIDs.includes(userID)
+  );
+
+  console.log(`Filtered Notifications for user ${userID}:`, JSON.stringify(userNotifications, null, 2)); // ✅ Debugging log
+
+  res.json(userNotifications);
 };
 
-// Get all notifications
-const getNotifications = (req, res) => {
-  res.json(readNotifications());
+
+
+// DELETE: Dismiss a notification by ID (only if it belongs to the user)
+const dismissNotification = (req, res) => {
+  const userID = req.user.id;
+  const { id } = req.params;
+
+  let notifications = loadNotifications();
+
+  const notificationIndex = notifications.findIndex(n => n.id === parseInt(id));
+
+  if (notificationIndex === -1) {
+    return res.status(404).json({ message: "Notification not found." });
+  }
+
+  notifications[notificationIndex].userIDs = notifications[notificationIndex].userIDs.filter(uid => uid !== userID);
+
+  // If no users remain, delete the notification
+  if (notifications[notificationIndex].userIDs.length === 0) {
+    notifications.splice(notificationIndex, 1);
+  }
+
+  fs.writeFileSync(DATA_FILE, JSON.stringify(notifications, null, 2));
+  res.json({ message: `Notification ${id} dismissed for user ${userID}.` });
 };
 
-// Add a new notification
-const addNotification = (req, res) => {
-  const notifications = readNotifications();
+
+// POST: Create a notification for a specific user
+const createNotification = (req, res) => {
+  const { message, type, userID } = req.body;
+
+  if (!message || !type || !userID) {
+    return res.status(400).json({ message: "Message, type, and userID are required" });
+  }
+
+  let notifications = loadNotifications();
+
   const newNotification = {
     id: Date.now(),
-    message: req.body.message,
-    type: req.body.type || "info",
+    userID, 
+    message,
+    type,
   };
+
   notifications.push(newNotification);
-  writeNotifications(notifications);
+  fs.writeFileSync(DATA_FILE, JSON.stringify(notifications, null, 2));
+
   res.status(201).json(newNotification);
 };
 
-// Remove a notification
-const deleteNotification = (req, res) => {
-  let notifications = readNotifications();
-  notifications = notifications.filter(notification => notification.id !== parseInt(req.params.id));
-  writeNotifications(notifications);
-  res.status(204).send();
+// Ensure all functions are exported
+module.exports = {
+  getUserNotifications,
+  dismissNotification,
+  createNotification
 };
-
-module.exports = { getNotifications, addNotification, deleteNotification };

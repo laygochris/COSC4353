@@ -4,7 +4,6 @@ const path = require("path");
 // File path for storing events
 const eventsFilePath = path.join(__dirname, "../data/events.json");
 
-// Helper function to read events
 const readEvents = () => {
     try {
         const data = fs.readFileSync(eventsFilePath, "utf8");
@@ -15,7 +14,14 @@ const readEvents = () => {
     }
 };
 
-// Get all events
+const saveEvents = (events) => {
+    try {
+        fs.writeFileSync(eventsFilePath, JSON.stringify(events, null, 2), "utf8");
+    } catch (error) {
+        console.error("Error saving events file:", error);
+    }
+};
+
 exports.getEvents = (req, res) => {
     const events = readEvents();
     if (!Array.isArray(events)) {
@@ -24,7 +30,6 @@ exports.getEvents = (req, res) => {
     res.json(events);
 };
 
-// Get a single event by ID
 exports.getEventById = (req, res) => {
     const eventId = parseInt(req.params.id, 10);
     const events = readEvents();
@@ -36,7 +41,6 @@ exports.getEventById = (req, res) => {
     res.json(event);
 };
 
-// Create a new event
 exports.createEvent = (req, res) => {
     const { name, location, date, description, required_skills } = req.body;
 
@@ -51,11 +55,47 @@ exports.createEvent = (req, res) => {
         location,
         date,
         description,
-        required_skills
+        required_skills,
+        assignedVolunteers: [] 
     };
 
     events.push(newEvent);
-    fs.writeFileSync(eventsFilePath, JSON.stringify(events, null, 4), "utf8");
+    saveEvents(events);
 
     res.status(201).json(newEvent);
+};
+
+exports.matchVolunteerToEvent = (req, res) => {
+    const { volunteerId, eventId } = req.body;
+
+    console.log(`Received request to match Volunteer ID: ${volunteerId} with Event ID: ${eventId}`);
+
+    if (!volunteerId || !eventId) {
+        return res.status(400).json({ message: "Volunteer ID and Event ID are required" });
+    }
+
+    let events = readEvents();
+    
+    const eventIndex = events.findIndex(event => event.id === eventId);
+    if (eventIndex === -1) {
+        console.error(`Event with ID ${eventId} not found`);
+        return res.status(404).json({ message: "Event not found." });
+    }
+
+    console.log(`Found Event:`, events[eventIndex]);
+
+    if (!Array.isArray(events[eventIndex].assignedVolunteers)) {
+        events[eventIndex].assignedVolunteers = [];
+    }
+    
+    if (!events[eventIndex].assignedVolunteers.includes(volunteerId)) {
+        events[eventIndex].assignedVolunteers.push(volunteerId);
+        console.log(`Volunteer ID ${volunteerId} added to event ${eventId}`);
+    } else {
+        console.warn(`Volunteer ID ${volunteerId} is already assigned to event ${eventId}`);
+    }
+
+    saveEvents(events);
+    console.log("Updated Events.json Successfully!");
+    res.json(events[eventIndex]); 
 };

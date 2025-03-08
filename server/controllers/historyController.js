@@ -23,32 +23,39 @@ const saveVolunteerHistory = (data) => {
   }
 };
 
-// ✅ Get all events (for debugging)
+// Get all events (for debugging)
 exports.getAllEvents = (req, res) => {
   const history = loadVolunteerHistory();
   res.json(history);
 };
 
-// ✅ Get volunteer history by ID
+// Get volunteer history by ID
 exports.getVolunteerHistory = (req, res) => {
+  const userID = req.user.id; 
+
+  if (!userID) {
+    return res.status(401).json({ message: "Unauthorized: User ID missing" });
+  }
+
   const history = loadVolunteerHistory();
-  const volunteerId = parseInt(req.params.volunteerId, 10);
 
-  if (isNaN(volunteerId)) {
-    return res.status(400).json({ message: "Invalid volunteer ID" });
-  }
+  console.log(`All Volunteer History:`, history);
+  console.log(`User ID from token: ${userID}`);
 
-  // Filter events where the volunteer is assigned
-  const assignedEvents = history.filter(event => event.assignedVolunteers.includes(volunteerId));
+  const userHistory = history.filter(event => Array.isArray(event.assignedVolunteers) && event.assignedVolunteers.includes(userID));
 
-  if (assignedEvents.length === 0) {
-    return res.status(200).json([]); // Return empty array instead of 404
-  }
+  console.log(`Filtered Volunteer History for user ${userID}:`, userHistory); 
 
-  res.json(assignedEvents);
+  res.json(userHistory);
 };
 
-// ✅ Assign a volunteer to an event
+
+
+
+
+
+
+// Assign a volunteer to an event
 exports.assignVolunteerToEvent = (req, res) => {
   const { volunteerId, eventId } = req.body;
   let history = loadVolunteerHistory();
@@ -66,7 +73,7 @@ exports.assignVolunteerToEvent = (req, res) => {
   res.json({ message: `Volunteer ${volunteerId} assigned to event ${eventId}` });
 };
 
-// ✅ Remove a volunteer from an event
+// Remove a volunteer from an event
 exports.removeVolunteerFromEvent = (req, res) => {
   const { volunteerId, eventId } = req.body;
   let history = loadVolunteerHistory();
