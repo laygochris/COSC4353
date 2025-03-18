@@ -226,25 +226,5 @@
     "password": "password123",
     "userType": "user",
     "skills": []
-  },
-  {
-    "id": 1741402403939,
-    "firstName": "Sarah",
-    "lastName": "Doe",
-    "email": "john.doe.1741402403935@example.com",
-    "username": "johndoe_1741402403935",
-    "password": "password123",
-    "userType": "user",
-    "skills": []
-  },
-  {
-    "id": 1741402472683,
-    "firstName": "Sarah",
-    "lastName": "Doe",
-    "email": "john.doe.1741402472680@example.com",
-    "username": "johndoe_1741402472680",
-    "password": "password123",
-    "userType": "user",
-    "skills": []
   }
 ]
