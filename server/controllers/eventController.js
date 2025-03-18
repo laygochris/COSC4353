@@ -4,6 +4,7 @@ const path = require("path");
 // File path for storing events
 const eventsFilePath = path.join(__dirname, "../data/events.json");
 
+// ✅ Helper function to read events
 const readEvents = () => {
     try {
         const data = fs.readFileSync(eventsFilePath, "utf8");
