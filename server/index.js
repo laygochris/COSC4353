@@ -20,11 +20,11 @@ const connectDB = async () => {
 
 connectDB(); 
 
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: "http://localhost:5001",
   credentials: true
 }));
 
@@ -51,6 +51,11 @@ app.use("/api/notifications", notificationRoutes);
 // simple test endpoint
 app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from the backend!' });
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+
 });
 
 app.listen(PORT, () => {
