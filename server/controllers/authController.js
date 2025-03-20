@@ -1,103 +1,94 @@
-const fs = require('fs');
-const path = require('path');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const key = process.env.JWT_SECRET || 'yourSecretKey';
+const UserCredential = require('../models/users.js');
+const UserProfile = require('../models/volunteers.js');
 
-// Path to the JSON file
-const filePath = path.join(__dirname, '../data/users.json');
-
-// Helper function to load users
-const loadUsers = () => {
-  try {
-    const dataBuffer = fs.readFileSync(filePath);
-    const dataJSON = dataBuffer.toString();
-    if (dataJSON.trim() === "") {
-      console.error("Error: users.json file is empty.");
-      return [];
-    }
-    return JSON.parse(dataJSON);
-  } catch (error) {
-    console.error("Error reading users file:", error);
-    return [];
-  }
-};
-
-// Helper function to save users
-const saveUsers = (users) => {
-  fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
-};
-
-// Register User Controller
-exports.registerUser = (req, res) => {
+exports.registerUser = async (req, res) => {
+  // Validate incoming data
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  // Extract required fields
-  const { firstName, lastName, email, username, password } = req.body;
+  const { username, firstName, lastName, email, password } = req.body;
 
-  // Load current users from file
-  let users = loadUsers();
+  try {
+    // Check if a user already exists with the same username or email
+    const existingCredential = await UserCredential.findOne({
+      $or: [{ username }, { email }]
+    });
+    if (existingCredential) {
+      return res.status(400).json({ message: 'User already exists.' });
+    }
 
-  // Check for duplicate username or email
-  const existingUser = users.find(
-    (u) => u.username === username || u.email === email
-  );
+    // Create the user credential document (password will be hashed via pre-save hook)
+    const newCredential = new UserCredential({
+      username,
+      email,
+      password
+    });
+    await newCredential.save();
 
+    // VOLUNTEER TABLE
+    const newProfile = new UserProfile({
+      user: newCredential._id,
+      fullName: '${firstName} ${lastName}',
+      email: email,
+      // Leave address, city, state, zipcode, skills, preferences, availability as defaults (empty)
+    });
+    await newProfile.save();
 
-  if (existingUser) {
-    return res.status(400).json({ message: 'User already exists.' });
+    return res.status(201).json({
+      message: 'User registered successfully!',
+      userCredential: newCredential,
+      userProfile: newProfile
+    });
+  } catch (error) {
+    console.error("Error registering user:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
-
-  // Create a new user object
-  const newUser = { 
-    id: Date.now(), 
-    firstName, 
-    lastName, 
-    email, 
-    username, 
-    password,
-    userType: 'user',
-    skills: []
-  };
-
-  // Add new user to the users array
-  users.push(newUser);
-
-  // Save the updated users array to the file
-  saveUsers(users);
-
-  return res.status(201).json({
-    message: 'User registered successfully!',
-    user: newUser,
-  });
 };
 
-// Login User Controller
-exports.loginUser = (req, res) => {
+
+// Login 
+exports.loginUser = async (req, res) => {
+  // Validate request data
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   } 
 
   const { email, password } = req.body;
-  const users = require('../data/users.json');
 
-  const foundUser = users.find(user => user.email === email && user.password === password);
-  if (!foundUser) {
-    return res.status(401).json({ message: 'Invalid credentials.' });
+  try {
+    // Find a user with the matching email
+    const foundUser = await UserCredential.findOne({ email });
+    if (!foundUser) {
+      return res.status(401).json({ message: 'Invalid credentials.' });
+    }
+    // check if decrypted password matches
+    const bcrypt = require('bcrypt');
+    const isMatch = await bcrypt.compare(password, foundUser.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid credentials.' });
+    }
+
+
+    // Sign a token (again, note: in production, don't include sensitive info like plain passwords)
+    const token = jwt.sign(
+      { userID: foundUser._id, email: foundUser.email },
+      key,
+      { expiresIn: "1hr" }
+    );
+
+    return res.json({
+      message: 'Login successful!',
+      user: foundUser,
+      token,
+    });
+  } catch (error) {
+    console.error("Error during login:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
-
-  const token = jwt.sign(
-    { userID: foundUser.id, email: foundUser.email },
-    key,
-    { expiresIn: "1hr" }
-  );
-  return res.json({
-    message: 'Login successful!',
-    user: foundUser,
-    token: token
-  });
 };

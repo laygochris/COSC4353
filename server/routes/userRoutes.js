@@ -1,47 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middleware/verifyToken');
-const fs = require('fs');
-const path = require('path');
-
-// Path to users.json
-const usersFilePath = path.join(__dirname, '../data/users.json');
-
-// Helper function to load users dynamically
-const loadUsers = () => {
-  try {
-    const dataBuffer = fs.readFileSync(usersFilePath);
-    return JSON.parse(dataBuffer.toString());
-  } catch (error) {
-    console.error("Error loading users file:", error);
-    return [];
-  }
-};
+const User = require("../models/users");
 
 // Protected route for getting a user profile
-router.get('/profile/:id', verifyToken, (req, res) => {
-  const userId = parseInt(req.params.id, 10);
-  const users = loadUsers(); // ✅ Load users dynamically
-  const user = users.find(user => user.id === userId);
-
-  if (user) {
+router.get('/profile/:id', verifyToken, async (req, res) => {
+  try {
+    // Parse the user ID from the route parameter
+    const userId = parseInt(req.params.id, 10);
+    // Query the database for a user with the matching "id" field
+    const user = await User.findOne({ id: userId });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
     res.json(user);
-  } else {
-    res.status(404).json({ message: 'User not found' });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
-//Test route
+// Test route
 router.get('/test', (req, res) => {
   console.log("HELLO I MADE IT HERE");
   res.json({ message: "HELLO I MADE IT HERE" });
 });
 
 module.exports = router;
-
-
-// router.get('/test', (req, res) => {
-//   console.log("HELLO I MADE IT HERE");
-//   res.json({ message: "HELLO I MADE IT HERE" });
-// });
-
