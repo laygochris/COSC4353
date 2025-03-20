@@ -9,7 +9,8 @@ router.get('/profile/:id', verifyToken, async (req, res) => {
     // Parse the user ID from the route parameter
     const userId = req.user.id;
     // Query the database for a user with the matching "id" field
-    const user = await User.findOne({ id: userId });
+    console.log("Trying to find user with ID:", userId);
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
