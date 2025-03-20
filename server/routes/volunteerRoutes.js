@@ -1,9 +1,8 @@
 const express = require("express");
-const { getVolunteers, matchVolunteersToEvent } = require("../controllers/volunteerController"); // Removed createVolunteer
-
 const router = express.Router();
+const volunteerController = require("../controllers/volunteerController");
 
-router.get("/", getVolunteers);
-router.get("/match/:volunteerId", matchVolunteersToEvent);
+router.get("/", volunteerController.getVolunteers);
+router.get("/:id", volunteerController.getVolunteerById);
 
 module.exports = router;

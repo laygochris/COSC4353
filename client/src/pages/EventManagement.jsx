@@ -12,7 +12,7 @@ const EventManagement = () => {
   });
 
   const skillsOptions = ["Communication", "Leadership", "Technical", "Teamwork"];
-  const urgencyLevels = ["Low", "Medium", "High"];
+  const urgencyLevels = ["low", "medium", "high"];
 
   const handleChange = (e) => {
     const { name, value } = e.target;

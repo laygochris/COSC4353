@@ -1,90 +1,53 @@
-const fs = require("fs");
-const path = require("path");
+const VolunteerHistory = require("../models/volunteerhistory");
+const jwt = require("jsonwebtoken");
 
-const DATA_FILE = path.join(__dirname, "../data/events.json");
+// ✅ Get volunteer history by user ID
+const getVolunteerHistory = async (req, res) => {
+    try {
+        console.log("Fetching volunteer history...");
 
-// Load volunteer history (from events.json)
-const loadVolunteerHistory = () => {
-  try {
-    const data = fs.readFileSync(DATA_FILE);
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("Error loading volunteer history:", error);
-    return [];
-  }
+        // ✅ Fix: Extract user ID from `req.user`
+        const userID = req.user?.id;  // Now `req.user` is guaranteed to exist
+
+        if (!userID) {
+            console.error("Unauthorized: User ID missing");
+            return res.status(401).json({ message: "Unauthorized: User ID missing" });
+        }
+
+        console.log(`Fetching history for user ID: ${userID}`);
+
+        // ✅ Fetch volunteer history for the user and populate event details
+        const history = await VolunteerHistory.find({ volunteer: userID }).populate({
+            path: "event",
+            select: "name description location required_skills urgency status date",
+        });
+
+        if (!history.length) {
+            console.log("No history found for user.");
+            return res.status(200).json([]);
+        }
+
+        console.log(`Fetched history: ${JSON.stringify(history, null, 2)}`);
+
+        // ✅ Format response for frontend
+        const formattedHistory = history.map(entry => ({
+            id: entry.event?._id || "N/A",
+            name: entry.event?.name || "N/A",
+            description: entry.event?.description || "N/A",
+            location: entry.event?.location || "N/A",
+            required_skills: entry.event?.required_skills || [],
+            urgency: entry.event?.urgency || "low",
+            status: entry.event?.status || "upcoming",
+            date: entry.event?.date ? new Date(entry.event.date).toISOString() : null,
+        }));
+
+        res.json(formattedHistory);
+    } catch (error) {
+        console.error("Error fetching volunteer history:", error);
+        res.status(500).json({ message: "Internal server error", error: error.message });
+    }
 };
 
-// Save updates to volunteer history
-const saveVolunteerHistory = (data) => {
-  try {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-  } catch (error) {
-    console.error("Error saving volunteer history:", error);
-  }
-};
-
-// Get all events (for debugging)
-exports.getAllEvents = (req, res) => {
-  const history = loadVolunteerHistory();
-  res.json(history);
-};
-
-// Get volunteer history by ID
-exports.getVolunteerHistory = (req, res) => {
-  const userID = req.user.id; 
-
-  if (!userID) {
-    return res.status(401).json({ message: "Unauthorized: User ID missing" });
-  }
-
-  const history = loadVolunteerHistory();
-
-  console.log(`All Volunteer History:`, history);
-  console.log(`User ID from token: ${userID}`);
-
-  const userHistory = history.filter(event => Array.isArray(event.assignedVolunteers) && event.assignedVolunteers.includes(userID));
-
-  console.log(`Filtered Volunteer History for user ${userID}:`, userHistory); 
-
-  res.json(userHistory);
-};
-
-
-
-
-
-
-
-// Assign a volunteer to an event
-exports.assignVolunteerToEvent = (req, res) => {
-  const { volunteerId, eventId } = req.body;
-  let history = loadVolunteerHistory();
-
-  const eventIndex = history.findIndex(event => event.id === eventId);
-  if (eventIndex === -1) {
-    return res.status(404).json({ error: "Event not found" });
-  }
-
-  if (!history[eventIndex].assignedVolunteers.includes(volunteerId)) {
-    history[eventIndex].assignedVolunteers.push(volunteerId);
-    saveVolunteerHistory(history);
-  }
-
-  res.json({ message: `Volunteer ${volunteerId} assigned to event ${eventId}` });
-};
-
-// Remove a volunteer from an event
-exports.removeVolunteerFromEvent = (req, res) => {
-  const { volunteerId, eventId } = req.body;
-  let history = loadVolunteerHistory();
-
-  const eventIndex = history.findIndex(event => event.id === eventId);
-  if (eventIndex === -1) {
-    return res.status(404).json({ error: "Event not found" });
-  }
-
-  history[eventIndex].assignedVolunteers = history[eventIndex].assignedVolunteers.filter(id => id !== volunteerId);
-  saveVolunteerHistory(history);
-
-  res.json({ message: `Volunteer ${volunteerId} removed from event ${eventId}` });
+module.exports = {
+    getVolunteerHistory,
 };
