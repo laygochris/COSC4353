@@ -1,47 +1,52 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 const User = require("../models/users.js");
-const bcrypt = require("bcrypt");
 
 const usersData = [
   {
     username: "link",
     email: "link@hyrule.com",
-    password: "zelda4ever"
+    password: "zelda4ever",
+    userType: "admin"
   },
   {
     username: "alice",
     email: "alice@example.com",
-    password: "password"
+    password: "password",
+    userType: "volunteer"
   },
   {
     username: "bob",
     email: "bob@example.com",
-    password: "password"
+    password: "password",
+    userType: "volunteer"
   },
   {
     username: "chrislaygo",
     email: "chris@example.com",
-    password: "password"
+    password: "password",
+    userType: "volunteer"
   },
   {
     username: "adammartinez",
     email: "adam@example.com",
-    password: "password"
+    password: "password",
+    userType: "volunteer"
   },
   {
     username: "dylanleanord",
     email: "dylan@example.com",
-    password: "password"
+    password: "password",
+    userType: "volunteer"
   },
   {
     username: "annetteptran",
     email: "annette@example.com",
-    password: "password"
+    password: "password",
+    userType: "volunteer"
   }
 ];
 
-// ✅ Function to seed users (Only Insert if Not Exists)
 const seedUsers = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
@@ -52,10 +57,10 @@ const seedUsers = async () => {
 
     for (let user of usersData) {
       const existingUser = await User.findOne({ username: user.username });
-
       if (!existingUser) {
-        user.password = await bcrypt.hash(user.password, 10); // Secure password hashing
-        await User.create(user); // Insert only if user does not exist
+        // Create the user without manually hashing the password;
+        // the pre-save hook in your User model will hash it automatically.
+        await User.create(user);
         console.log(`✅ Inserted user: ${user.username}`);
       } else {
         console.log(`⚠️ User "${user.username}" already exists, skipping...`);

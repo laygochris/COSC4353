@@ -30,7 +30,7 @@ const Login = ({ setLoggedIn, setUserRole }) => {
       if (data.token) {
         console.log("HELLO FROM TOKEN");
         localStorage.setItem("token", data.token);
-        localStorage.setItem("userId", data.user.id);
+        localStorage.setItem("userId", data.user._id);
         setLoggedIn(true);
         setUserRole(data.user.userType); // Update userRole state
       }

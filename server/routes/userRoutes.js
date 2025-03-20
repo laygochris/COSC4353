@@ -7,10 +7,9 @@ const User = require("../models/users");
 router.get('/profile/:id', verifyToken, async (req, res) => {
   try {
     // Parse the user ID from the route parameter
-    const userId = parseInt(req.params.id, 10);
+    const userId = req.user.id;
     // Query the database for a user with the matching "id" field
     const user = await User.findOne({ id: userId });
-    
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

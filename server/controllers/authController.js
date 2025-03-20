@@ -65,13 +65,16 @@ exports.loginUser = async (req, res) => {
     // Find a user with the matching email
     const foundUser = await UserCredential.findOne({ email });
     if (!foundUser) {
-      return res.status(401).json({ message: 'Invalid credentials.' });
+      return res.status(401).json({ message: 'Email invalid.' });
     }
     // check if decrypted password matches
+    console.log("Found user:", foundUser);
     const bcrypt = require('bcrypt');
     const isMatch = await bcrypt.compare(password, foundUser.password);
+    console.log("Password received:", password);
+    console.log("isMatch result:", isMatch);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials.' });
+      return res.status(401).json({ message: 'Password invalid.' });
     }
 
 

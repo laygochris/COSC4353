@@ -1,10 +1,9 @@
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useCallback } from "react";
-import "./navbar.css";
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
+import { Button, Card, Container, Row, Col } from "react-bootstrap";
 import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
+import Nav from "react-bootstrap/Nav";
+import "./navbar.css";
 import logo from "../images/ih_logo_navbar.png";
 import Notifications from "../pages/Notifications";
 import { CgProfile } from "react-icons/cg";
@@ -16,8 +15,9 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
 
   const fetchUserProfile = useCallback(async () => {
     const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
-    console.log("NAVBAR HAS:", userId);
+    const userId = localStorage.getItem("userId"); // Now stored as the ObjectId (_id)
+    console.log("NAVBAR has userId:", userId);
+
     if (token && userId) {
       try {
         const response = await fetch(
@@ -29,7 +29,8 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
           }
         );
         const data = await response.json();
-        console.log("Fetched user data:", data); // Log the entire data object
+        console.log("Fetched user data:", data);
+        // Assuming your API returns the user credential details, which now include userType
         setUsername(data.username);
         setUserType(data.userType);
         setUserRole(data.userType);
@@ -40,7 +41,7 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
     } else {
       setUsername("Guest");
       setUserType("");
-      setUserRole(""); // Reset userRole state
+      setUserRole("");
     }
   }, [setUserRole]);
 
@@ -58,7 +59,7 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
     localStorage.removeItem("userId");
     setUsername("Guest");
     setUserType("");
-    setUserRole(""); // Reset userRole state
+    setUserRole("");
     setLoggedIn(false);
     navigate("/login");
   };
@@ -69,7 +70,6 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
         <Navbar.Brand as={Link} to="/home">
           <img src={logo} alt="Impact Houston" className="navbar-logo" />
         </Navbar.Brand>
-
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
@@ -82,19 +82,16 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
                 Logout
               </Nav.Link>
             )}
-
             {userType === "admin" && (
               <Nav.Link as={Link} to="/eventManagement">
                 Event Management
               </Nav.Link>
             )}
-
             {userType === "volunteer" && (
               <Nav.Link as={Link} to="/volunteerHistory">
                 Volunteer History
               </Nav.Link>
             )}
-
             {userType === "admin" && (
               <Nav.Link as={Link} to="/volunteerMatchingForm">
                 Volunteer Matching Form
@@ -104,7 +101,6 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
               Events
             </Nav.Link>
           </Nav>
-
           <Nav className="ms-auto">
             <Navbar.Text className="me-3">
               Signed in as {username || "Guest"}
