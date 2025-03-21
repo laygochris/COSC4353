@@ -45,7 +45,7 @@ app.use('/api/user', userRoutes);
 app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/user-profile", userProfileRoutes);
-app.use("/api/volunteer-history", historyRoutes); 
+app.use("/api/volunteer-history", historyRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 // simple test endpoint

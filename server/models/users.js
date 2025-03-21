@@ -22,7 +22,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         default: 'user',
-    }
+    },
+    fullName: { type: String, default: '' },
+    address: { type: String, default: '' },
+    city: { type: String, default: '' },
+    state: { type: String, default: '' },
+    zipcode: { type: String, default: '' },
+    skills: { type: [String], default: [] },
+    preferences: { type: [String], default: [] },
+    availability: { type: String, default: '' }
 }, { timestamps: true });
 
 // Hash the password before saving
