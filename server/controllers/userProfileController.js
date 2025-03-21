@@ -1,98 +1,101 @@
 const fs = require('fs');
 const path = require('path');
+const mongoose = require('mongoose');
 const { validationResult } = require('express-validator');
+const User = require('../models/users.js');
 
-// File path to `users.json`
-const filePath = path.join(__dirname, '../data/users.json');
-
-// Helper function to load users
-const loadUsers = () => {
-    try {
-        const dataBuffer = fs.readFileSync(filePath);
-        const dataJSON = dataBuffer.toString();
-        if (dataJSON.trim() === "") {
-            return [];
-        }
-        return JSON.parse(dataJSON);
-    } catch (error) {
-        return [];
-    }
-};
-
-// Helper function to save users
-const saveUsers = (users) => {
-    fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
-};
-
-// Get User Profile
-exports.getUserProfile = (req, res) => {
+// GET user profile
+exports.getUserProfile = async (req, res) => {
     const { userId } = req.params;
 
-    const users = loadUsers();
-
-    const userProfile = users.find((u) => u.id === parseInt(userId, 10));
-
-    if (!userProfile) {
-        return res.status(404).json({ message: 'User profile not found in users.json.' });
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID format.' });
     }
 
-    return res.json({
-        message: 'User profile retrieved successfully!',
-        profile: userProfile
-    });
+    try {
+        const userProfile = await User.findById(userId);
+        if (!userProfile) {
+            return res.status(404).json({ message: 'User profile not found in database.' });
+        }
+
+        return res.json({
+            message: 'User profile retrieved successfully!',
+            profile: userProfile
+        });
+    } catch (error) {
+        console.error('Error retrieving user profile:', error);
+        return res.status(500).json({ message: 'Server error.' });
+    }
 };
 
-exports.updateUserProfile = (req, res) => {
+// UPDATE user profile
+exports.updateUserProfile = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         console.log(`⚠️ Validation errors:`, errors.array());
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { userId, fullName, address, city, state, zip, skills, preference, availability } = req.body;
+    const {
+        userId,
+        fullName,
+        address,
+        city,
+        state,
+        zip,
+        skills,
+        preference,
+        availability
+    } = req.body;
 
-    let users = loadUsers();
+    try {
+        const user = await User.findById(userId);
 
-    let existingUser = users.find((u) => u.id === parseInt(userId, 10));
+        if (!user) {
+            return res.status(404).json({ message: 'User not found in database.' });
+        }
 
-    if (!existingUser) {
-        return res.status(404).json({ message: 'User not found in users.json.' });
+        if (fullName) {
+            user.firstName = fullName.split(" ")[0] || user.firstName;
+            user.lastName = fullName.split(" ")[1] || user.lastName;
+        }
+
+        user.address = address || user.address;
+        user.city = city || user.city;
+        user.state = state || user.state;
+        user.zip = zip || user.zip;
+        user.skills = skills || user.skills;
+        user.preference = preference || user.preference;
+        user.availability = availability || user.availability;
+
+        await user.save();
+
+        return res.status(200).json({
+            message: 'User profile updated successfully!',
+            profile: user,
+        });
+    } catch (error) {
+        console.error('Error updating user profile:', error);
+        return res.status(500).json({ message: 'Server error.' });
     }
-
-    // update
-    existingUser.firstName = fullName.split(" ")[0] || existingUser.firstName;
-    existingUser.lastName = fullName.split(" ")[1] || existingUser.lastName;
-    existingUser.address = address || existingUser.address;
-    existingUser.city = city || existingUser.city;
-    existingUser.state = state || existingUser.state;
-    existingUser.zip = zip || existingUser.zip;
-    existingUser.skills = skills || existingUser.skills;
-    existingUser.preference = preference || existingUser.preference;
-    existingUser.availability = availability || existingUser.availability;
-
-    saveUsers(users);
-
-    return res.status(200).json({
-        message: 'User profile updated successfully!',
-        profile: existingUser,
-    });
 };
 
-// Delete User Profile
-exports.deleteUserProfile = (req, res) => {
+// DELETE user profile
+exports.deleteUserProfile = async (req, res) => {
     const { userId } = req.params;
 
-    let users = loadUsers();
+    try {
+        const deletedUser = await User.findByIdAndDelete(userId);
 
-    const updatedUsers = users.filter((u) => u.id !== parseInt(userId, 10));
+        if (!deletedUser) {
+            return res.status(404).json({ message: 'User profile not found in database.' });
+        }
 
-    if (users.length === updatedUsers.length) {
-        return res.status(404).json({ message: 'User profile not found in users.json.' });
+        return res.json({
+            message: 'User profile deleted successfully!',
+        });
+    } catch (error) {
+        console.error('Error deleting user profile:', error);
+        return res.status(500).json({ message: 'Server error.' });
     }
-
-    saveUsers(updatedUsers);
-
-    return res.json({
-        message: 'User profile deleted successfully!',
-    });
 };
