@@ -1,8 +1,24 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const mongoose = require('mongoose'); 
 const path = require('path');
 const app = express();
+
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('MongoDB Connected...');
+  } catch (error) {
+    console.error('MongoDB Connection Failed:', error);
+    process.exit(1); 
+  }
+};
+
+connectDB(); 
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
