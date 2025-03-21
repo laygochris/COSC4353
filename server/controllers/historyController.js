@@ -1,53 +1,69 @@
-const VolunteerHistory = require("../models/volunteerhistory");
-const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
+const Event = require("../models/events"); // ✅ Matches provided events.js
+const User = require("../models/users"); // ✅ Matches provided users.js
 
-// ✅ Get volunteer history by user ID
-const getVolunteerHistory = async (req, res) => {
+// Get all events (for debugging)
+exports.getAllEvents = async (req, res) => {
     try {
-        console.log("Fetching volunteer history...");
-
-        // ✅ Fix: Extract user ID from `req.user`
-        const userID = req.user?.id;  // Now `req.user` is guaranteed to exist
-
-        if (!userID) {
-            console.error("Unauthorized: User ID missing");
-            return res.status(401).json({ message: "Unauthorized: User ID missing" });
-        }
-
-        console.log(`Fetching history for user ID: ${userID}`);
-
-        // ✅ Fetch volunteer history for the user and populate event details
-        const history = await VolunteerHistory.find({ volunteer: userID }).populate({
-            path: "event",
-            select: "name description location required_skills urgency status date",
-        });
-
-        if (!history.length) {
-            console.log("No history found for user.");
-            return res.status(200).json([]);
-        }
-
-        console.log(`Fetched history: ${JSON.stringify(history, null, 2)}`);
-
-        // ✅ Format response for frontend
-        const formattedHistory = history.map(entry => ({
-            id: entry.event?._id || "N/A",
-            name: entry.event?.name || "N/A",
-            description: entry.event?.description || "N/A",
-            location: entry.event?.location || "N/A",
-            required_skills: entry.event?.required_skills || [],
-            urgency: entry.event?.urgency || "low",
-            status: entry.event?.status || "upcoming",
-            date: entry.event?.date ? new Date(entry.event.date).toISOString() : null,
-        }));
-
-        res.json(formattedHistory);
+        const events = await Event.find();
+        res.json(events);
     } catch (error) {
-        console.error("Error fetching volunteer history:", error);
-        res.status(500).json({ message: "Internal server error", error: error.message });
+        console.error("❌ Error fetching events:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
-module.exports = {
-    getVolunteerHistory,
+// Get volunteer history by ObjectId
+exports.getVolunteerHistory = async (req, res) => {
+    try {
+        const { userId } = req.params; // Get ObjectId from route parameter
+
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid ObjectId format" });
+        }
+
+        console.log(`📌 Fetching volunteer history for ObjectId: ${userId}`);
+
+        // Find all events where this user has been assigned
+        const userEvents = await Event.find({ assignedVolunteers: userId });
+        
+        if (!userEvents.length) {
+            return res.status(404).json({ message: "No volunteer history found for this user" });
+        }
+
+        res.json(userEvents);
+    } catch (error) {
+        console.error("❌ Error fetching volunteer history:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 };
+
+// Assign a volunteer to an event using ObjectId
+exports.assignVolunteerToEvent = async (req, res) => {
+    try {
+        const { volunteerId, eventId } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(volunteerId) || !mongoose.Types.ObjectId.isValid(eventId)) {
+            return res.status(400).json({ message: "Invalid volunteer ID or event ID" });
+        }
+
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+
+        if (!event.assignedVolunteers.includes(volunteerId)) {
+            event.assignedVolunteers.push(volunteerId);
+            await event.save();
+            console.log(`✅ Volunteer ${volunteerId} assigned to event ${eventId}`);
+        } else {
+            console.warn(`⚠️ Volunteer ${volunteerId} is already assigned to event ${eventId}`);
+        }
+
+        res.json({ message: `Volunteer ${volunteerId} assigned to event ${eventId}`, event });
+    } catch (error) {
+        console.error("❌ Error assigning volunteer to event:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+

@@ -9,28 +9,40 @@ const VolunteerHistory = () => {
   useEffect(() => {
     const fetchVolunteerHistory = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("User not authenticated");
+        const token = localStorage.getItem("token"); // Get token from localStorage
+        const userId = localStorage.getItem("userId"); // Get userId from localStorage
 
-        const response = await fetch("http://localhost:5001/api/volunteer-history", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        if (!token || !userId) {
+          throw new Error("User not authenticated");
+        }
+
+        console.log("Attempting to find volunteer history for user:", userId);
+
+        // Make the API call using userId from localStorage
+        const response = await fetch(
+          `http://localhost:5001/api/volunteer-history/profile/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Pass token as Authorization header
+            },
+          }
+        );
 
         if (!response.ok) throw new Error("Failed to fetch volunteer history");
 
         const data = await response.json();
         console.log("Fetched volunteer history:", data);
 
-        setVolunteerEvents(data);
+        setVolunteerEvents(data); // Update the state with the fetched data
       } catch (error) {
         console.error("Error fetching volunteer history:", error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false once the data is fetched
       }
     };
 
-    fetchVolunteerHistory();
-  }, []);
+    fetchVolunteerHistory(); // Call the function to fetch the volunteer history
+  }, []); // Empty dependency array to run once when the component mounts
 
   return (
     <div className="container mt-5">
@@ -57,13 +69,17 @@ const VolunteerHistory = () => {
                 volunteerEvents.map((event, index) => (
                   <tr key={event.id}>
                     <td>{index + 1}</td>
-                    <td>{event.name || "N/A"}</td>
-                    <td>{event.description || "N/A"}</td>
-                    <td>{event.location || "N/A"}</td>
+                    <td>{event.name}</td>
+                    <td>{event.description}</td>
+                    <td>{event.location}</td>
                     <td>
-                      {event.required_skills && event.required_skills.length > 0 ? (
+                      {event.required_skills &&
+                      event.required_skills.length > 0 ? (
                         event.required_skills.map((skill, skillIndex) => (
-                          <span key={skillIndex} className="badge bg-secondary me-1">
+                          <span
+                            key={skillIndex}
+                            className="badge bg-secondary me-1"
+                          >
                             {skill}
                           </span>
                         ))
@@ -76,39 +92,41 @@ const VolunteerHistory = () => {
                         className="badge"
                         style={{
                           backgroundColor:
-                            event.urgency?.toLowerCase() === "high"
+                            event.urgency === "High"
                               ? "#931621"
-                              : event.urgency?.toLowerCase() === "medium"
+                              : event.urgency === "Medium"
                               ? "#D9A404"
                               : "#60993E",
                           color: "white",
                         }}
                       >
-                        {event.urgency || "N/A"}
+                        {event.urgency}
                       </span>
                     </td>
-                    <td>{event.date ? new Date(event.date).toLocaleDateString() : "N/A"}</td>
+                    <td>{event.date}</td>
                     <td>
                       <span
                         className="badge"
                         style={{
                           backgroundColor:
-                            event.status?.toLowerCase() === "completed"
+                            event.status === "Completed"
                               ? "#60993E"
-                              : event.status?.toLowerCase() === "upcoming"
+                              : event.status === "Upcoming"
                               ? "#2C365E"
                               : "#931621",
                           color: "white",
                         }}
                       >
-                        {event.status || "N/A"}
+                        {event.status}
                       </span>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="8" className="text-center">No volunteer history found.</td>
+                  <td colSpan="8" className="text-center">
+                    No volunteer history found.
+                  </td>
                 </tr>
               )}
             </tbody>

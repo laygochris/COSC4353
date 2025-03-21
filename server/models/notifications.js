@@ -5,10 +5,10 @@ const notificationsSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    userIDs: {
-        type: [Number],
-        required: false,
-    },
+    userIDs: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      }],
     message: {
         type: String,
         required: true,

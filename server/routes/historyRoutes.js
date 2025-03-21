@@ -1,8 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const historyController = require("../controllers/historyController");
-const verifyToken = require("../middleware/verifyToken"); // Middleware to verify JWT token
+const verifyToken = require("../middleware/verifyToken");
 
-router.get("/", verifyToken, historyController.getVolunteerHistory);
+const {
+  getAllEvents,
+  getVolunteerHistory,
+  assignVolunteerToEvent,
+} = require("../controllers/historyController");
+
+// ✅ GET /api/history/events - Returns all events
+router.get("/events", getAllEvents);
+
+// ✅ GET /api/history/profile/:userId - Returns volunteer history for a specific user
+router.get("/profile/:userId", verifyToken, getVolunteerHistory);
+
+// ✅ POST /api/history/assign - Assign a volunteer to an event
+router.post("/assign", assignVolunteerToEvent);
+
 
 module.exports = router;
