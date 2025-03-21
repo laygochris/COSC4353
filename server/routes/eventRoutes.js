@@ -3,20 +3,11 @@ const router = express.Router();
 const {
     getEvents,
     getEventById,
-    createEvent,
     assignVolunteerToEvent
 } = require("../controllers/eventController");
 
-// ✅ Get all events
-router.get("/events", getEvents);
-
-// ✅ Get a specific event by ID (ObjectId validation)
-router.get("/events/:eventId", getEventById);
-
-// ✅ Create a new event
-router.post("/events", createEvent);
-
-// ✅ Assign a volunteer (ObjectId) to an event
-router.post("/events/assign", assignVolunteerToEvent);
+router.get("/", getEvents);  // Now this matches /api/events
+router.get("/:eventId", getEventById);  // Now this matches /api/events/:eventId
+router.post("/assign", assignVolunteerToEvent);  // Now this matches /api/events/assign
 
 module.exports = router;

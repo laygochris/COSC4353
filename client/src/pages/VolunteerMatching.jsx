@@ -28,14 +28,20 @@ const VolunteerMatching = ({ userRole }) => {
       const data = await response.json();
       console.log("Received data from API:", data);
       
-      setVolunteers(data);
+      // Ensure that data contains the necessary fields and update the state
+      if (Array.isArray(data)) {
+        setVolunteers(data);  // Set the volunteers data into state
+      } else {
+        console.error("Fetched data is not in the expected format", data);
+      }
     } catch (error) {
       console.error("Error fetching volunteers:", error);
     }
   };
+  
 
   const fetchMatchedEvents = async (volunteerId) => {
-    if (!volunteerId || isNaN(volunteerId)) {
+    if (!volunteerId) {
       console.error("Invalid volunteerId detected:", volunteerId);
       return;
     }
@@ -73,22 +79,27 @@ const VolunteerMatching = ({ userRole }) => {
       <h3 className="text-center mt-4">Select a Volunteer</h3>
       <Form>
         <Form.Group controlId="volunteerSelect" className="mb-3">
-          <Form.Control as="select" onChange={(e) => {
-            const volunteerId = parseInt(e.target.value, 10);
+        <Form.Control
+          as="select"
+          onChange={(e) => {
+            const volunteerId = e.target.value;  // Use MongoDB _id as value
             console.log("Selected Volunteer ID:", volunteerId);
-            
-            if (!volunteerId || isNaN(volunteerId)) {
+
+            if (!volunteerId) {
               console.error("Invalid volunteerId detected:", volunteerId);
               return;
             }
-            
-            fetchMatchedEvents(volunteerId);
-          }}>
-            <option value="">Select a Volunteer</option>
-            {volunteers.map(volunteer => (
-              <option key={volunteer.id} value={volunteer.id}>{volunteer.firstName} {volunteer.lastName}</option>
-            ))}
-          </Form.Control>
+
+            fetchMatchedEvents(volunteerId);  // Fetch matched events based on volunteer _id
+          }}
+        >
+          <option value="">Select a Volunteer</option>
+          {volunteers.map(volunteer => (
+            <option key={volunteer._id} value={volunteer._id}> {/* Use MongoDB _id as value */}
+              {volunteer.fullName} {/* Display the full name */}
+            </option>
+          ))}
+        </Form.Control>
         </Form.Group>
 
         {selectedVolunteer?.matchedEvents?.length > 0 ? (
