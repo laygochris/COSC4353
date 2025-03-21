@@ -6,11 +6,11 @@ const User = require("../models/users");
 // Protected route for getting a user profile
 router.get('/profile/:id', verifyToken, async (req, res) => {
   try {
-    // Parse the user ID from the route parameter
-    const userId = req.user.id;
-    // Query the database for a user with the matching "id" field
+    const userId = req.user.id; // Use the user ID from the middleware
+
     console.log("Trying to find user with ID:", userId);
-    const user = await User.findById(userId);
+
+    const user = await User.findById(userId); // Pass userId directly
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

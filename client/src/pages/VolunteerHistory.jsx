@@ -3,41 +3,53 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/VolunteerHistory.css";
 
 const VolunteerHistory = () => {
-  const [volunteerEvents, setVolunteerEvents] = useState([]); 
-  const [loading, setLoading] = useState(true); 
+  const [volunteerEvents, setVolunteerEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchVolunteerHistory = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("User not authenticated");
-    
-        const response = await fetch("http://localhost:5001/api/volunteer-history", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-    
+        const token = localStorage.getItem("token"); // Get token from localStorage
+        const userId = localStorage.getItem("userId"); // Get userId from localStorage
+
+        if (!token || !userId) {
+          throw new Error("User not authenticated");
+        }
+
+        console.log("Attempting to find volunteer history for user:", userId);
+
+        // Make the API call using userId from localStorage
+        const response = await fetch(
+          `http://localhost:5001/api/volunteer-history/profile/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Pass token as Authorization header
+            },
+          }
+        );
+
         if (!response.ok) throw new Error("Failed to fetch volunteer history");
-    
+
         const data = await response.json();
-        console.log("Fetched volunteer history:", data); 
-    
-        setVolunteerEvents(data);
+        console.log("Fetched volunteer history:", data);
+
+        setVolunteerEvents(data); // Update the state with the fetched data
       } catch (error) {
         console.error("Error fetching volunteer history:", error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false once the data is fetched
       }
-    };    
+    };
 
-    fetchVolunteerHistory();
-  }, []);
+    fetchVolunteerHistory(); // Call the function to fetch the volunteer history
+  }, []); // Empty dependency array to run once when the component mounts
 
   return (
     <div className="container mt-5">
       <h1 className="text-center mb-4">Volunteer History</h1>
       <div className="table-responsive">
         {loading ? (
-          <p className="text-center">Loading...</p> 
+          <p className="text-center">Loading...</p>
         ) : (
           <table className="table table-striped table-bordered">
             <thead className="table custom-table-header">
@@ -61,9 +73,13 @@ const VolunteerHistory = () => {
                     <td>{event.description}</td>
                     <td>{event.location}</td>
                     <td>
-                      {event.required_skills && event.required_skills.length > 0 ? (
+                      {event.required_skills &&
+                      event.required_skills.length > 0 ? (
                         event.required_skills.map((skill, skillIndex) => (
-                          <span key={skillIndex} className="badge bg-secondary me-1">
+                          <span
+                            key={skillIndex}
+                            className="badge bg-secondary me-1"
+                          >
                             {skill}
                           </span>
                         ))

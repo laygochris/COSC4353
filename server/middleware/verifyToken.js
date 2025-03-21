@@ -5,26 +5,26 @@ const UserCredential = require("../models/users.js");
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
   console.log("Authorization Header:", authHeader);
-
+  
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(403).json({ message: "No token provided." });
   }
-
+  
   const token = authHeader.split(" ")[1];
   console.log("Extracted Token:", token);
-
+  
   jwt.verify(token, key, async (err, decoded) => {
     if (err) {
       console.error("JWT Verification Error:", err);
       return res.status(401).json({ message: "Failed to authenticate token." });
     }
-
+    
     console.log("Decoded Token Data:", decoded);
-
+    
     if (!decoded.userID) {
       return res.status(401).json({ message: "Invalid token: userID missing." });
     }
-
+    
     try {
       // Query the database for the user using the _id from the token
       const user = await UserCredential.findById(decoded.userID);
