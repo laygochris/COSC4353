@@ -1,33 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const verifyToken = require('../middleware/verifyToken');
-const Event = require("../models/events"); 
+const verifyToken = require("../middleware/verifyToken");
 
 const {
-    getAllEvents,
-    getVolunteerHistory,
-    assignVolunteerToEvent,
-    removeVolunteerFromEvent
+  getAllEvents,
+  getVolunteerHistory,
+  assignVolunteerToEvent,
 } = require("../controllers/historyController");
 
-// ✅ This must exist to handle GET /api/history/events
+// ✅ GET /api/history/events - Returns all events
 router.get("/events", getAllEvents);
-router.get("/profile/:id", verifyToken, async (req, res) => {
-    console.log("Received request for userId:", req.params.userId);
-    try {
-      const userId = req.user.id;
-      const userEvents = await Event.find({ assignedVolunteers: userId });
-  
-      if (!userEvents.length) {
-        return res.status(404).json({ message: "No volunteer history found for this user" });
-      }
-      res.json(userEvents);
-    } catch (error) {
-      console.error("Error fetching volunteer history:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-  router.post("/assign", assignVolunteerToEvent);
-router.post("/remove", removeVolunteerFromEvent);
+
+// ✅ GET /api/history/profile/:userId - Returns volunteer history for a specific user
+router.get("/profile/:userId", verifyToken, getVolunteerHistory);
+
+// ✅ POST /api/history/assign - Assign a volunteer to an event
+router.post("/assign", assignVolunteerToEvent);
+
 
 module.exports = router;

@@ -13,22 +13,6 @@ exports.getVolunteers = async (req, res) => {
     }
 };
 
-// Get volunteer by email
-exports.getVolunteerByEmail = async (req, res) => {
-    try {
-        const { email } = req.query;
-        if (!email) return res.status(400).json({ message: "Email is required" });
-
-        const volunteer = await User.findOne({ email, userType: "volunteer" }).select("_id email fullName skills");
-        if (!volunteer) return res.status(404).json({ message: "Volunteer not found" });
-
-        res.json({ volunteerId: volunteer._id });
-    } catch (error) {
-        console.error("❌ Error fetching volunteer:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-};
-
 // Get volunteer by ID (ObjectId)
 exports.getVolunteerById = async (req, res) => {
     try {
@@ -78,35 +62,6 @@ exports.matchVolunteersToEvent = async (req, res) => {
         res.json({ volunteer, matchedEvents });
     } catch (error) {
         console.error("❌ Error matching volunteers to events:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-};
-
-// Create a new volunteer
-exports.createVolunteer = async (req, res) => {
-    try {
-        const { username, email, password, fullName, skills } = req.body;
-
-        if (!username || !email || !password || !fullName || !skills) {
-            return res.status(400).json({ message: "Missing required fields" });
-        }
-
-        const existingVolunteer = await User.findOne({ email });
-        if (existingVolunteer) return res.status(400).json({ message: "Volunteer with this email already exists" });
-
-        const newVolunteer = new User({
-            username,
-            email,
-            password,
-            fullName,
-            userType: "volunteer",
-            skills: Array.isArray(skills) ? skills : [skills],
-        });
-
-        await newVolunteer.save();
-        res.status(201).json({ message: "Volunteer created successfully", volunteerId: newVolunteer._id });
-    } catch (error) {
-        console.error("❌ Error creating volunteer:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };

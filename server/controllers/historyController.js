@@ -67,27 +67,3 @@ exports.assignVolunteerToEvent = async (req, res) => {
     }
 };
 
-// Remove a volunteer from an event using ObjectId
-exports.removeVolunteerFromEvent = async (req, res) => {
-    try {
-        const { volunteerId, eventId } = req.body;
-
-        if (!mongoose.Types.ObjectId.isValid(volunteerId) || !mongoose.Types.ObjectId.isValid(eventId)) {
-            return res.status(400).json({ message: "Invalid volunteer ID or event ID" });
-        }
-
-        const event = await Event.findById(eventId);
-        if (!event) {
-            return res.status(404).json({ message: "Event not found" });
-        }
-
-        event.assignedVolunteers = event.assignedVolunteers.filter(id => id.toString() !== volunteerId);
-        await event.save();
-
-        console.log(`✅ Volunteer ${volunteerId} removed from event ${eventId}`);
-        res.json({ message: `Volunteer ${volunteerId} removed from event ${eventId}`, event });
-    } catch (error) {
-        console.error("❌ Error removing volunteer from event:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-};
