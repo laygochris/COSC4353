@@ -30,18 +30,30 @@ const EventManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-
+  
+    const payload = {
+      name: formData.name,
+      description: formData.description,
+      location: formData.location,
+      requiredSkills: formData.skills, // map skills to requiredSkills
+      urgency: formData.urgency,
+      date: formData.date,
+      status: "upcoming",
+    };
+    
+    console.log(payload);
     try {
-      const response = await fetch("http://localhost:5001/api/events", {
+      const response = await fetch("http://localhost:5001/api/events/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
-
-      if (!response.ok) throw new Error("Failed to create event");
-
-      alert(" Event created successfully!");
+  
+      if (!response.ok) {
+        throw new Error("Failed to create event");
+      }
+  
+      alert("Event created successfully!");
       setFormData({
         name: "",
         description: "",
@@ -50,13 +62,12 @@ const EventManagement = () => {
         urgency: "",
         date: "",
       });
-
     } catch (error) {
-      alert(" Error creating event. Please try again.");
+      alert("Error creating event. Please try again.");
     }
-
     setIsSubmitting(false);
   };
+  
 
   return (
       <div className="container event-management-container text-center py-5">
