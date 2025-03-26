@@ -38,6 +38,8 @@ const EventManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    const token = localStorage.getItem("token"); // Get token from localStorage
+    const userId = localStorage.getItem("userId"); // Get userId from localStorage
 
     const payload = {
       name: formData.name,
@@ -54,7 +56,10 @@ const EventManagement = () => {
     try {
       const response = await fetch("http://localhost:5001/api/events/create", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
       });
 

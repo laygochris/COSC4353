@@ -6,14 +6,21 @@ const User = require("../models/users");
 exports.createEvent = async (req, res) => {
     try {
         const { name, description, location, requiredSkills, urgency, date, status } = req.body;
+        console.log("Received data:", req.body);
         // Validate required fields
         if (!name || !description || !location || !requiredSkills || !urgency || !date) {
             return res.status(400).json({ message: "Missing required event fields" });
         }
+
+        
         // Use provided status or default to "upcoming"
         const eventStatus = status || "upcoming";
-        const eventDate = new Date(date)
-        
+        const eventDate = new Date(date);
+        console.log("Parsed date:", eventDate); // Log the parsed date
+    
+        if (isNaN(eventDate)) {
+          return res.status(400).json({ message: "Invalid date format" });
+        }
         const newEvent = new Event({
             name,
             description,
