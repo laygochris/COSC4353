@@ -12,13 +12,15 @@ exports.createEvent = async (req, res) => {
         }
         // Use provided status or default to "upcoming"
         const eventStatus = status || "upcoming";
+        const eventDate = new Date(date)
+        
         const newEvent = new Event({
             name,
             description,
             location,
             requiredSkills,
             urgency,
-            date,
+            date: eventDate,
             status: eventStatus,
             assignedVolunteers: []
         });
