@@ -6,28 +6,19 @@ const User = require("../models/users");
 exports.createEvent = async (req, res) => {
     try {
         const { name, description, location, requiredSkills, urgency, date, status } = req.body;
-        console.log("Received data:", req.body);
         // Validate required fields
         if (!name || !description || !location || !requiredSkills || !urgency || !date) {
             return res.status(400).json({ message: "Missing required event fields" });
         }
-
-        
         // Use provided status or default to "upcoming"
         const eventStatus = status || "upcoming";
-        const eventDate = new Date(date);
-        console.log("Parsed date:", eventDate); // Log the parsed date
-    
-        if (isNaN(eventDate)) {
-          return res.status(400).json({ message: "Invalid date format" });
-        }
         const newEvent = new Event({
             name,
             description,
             location,
             requiredSkills,
             urgency,
-            date: eventDate,
+            date,
             status: eventStatus,
             assignedVolunteers: []
         });
@@ -66,7 +57,7 @@ exports.getEventById = async (req, res) => {
     }
 };
 
-// Update event (mimics updateUserProfile functionality)
+// Update event 
 exports.updateEvent = async (req, res) => {
     try {
         const { eventId, name, description, location, date, requiredSkills, urgency, status } = req.body;
@@ -93,7 +84,7 @@ exports.updateEvent = async (req, res) => {
     }
 };
 
-// Delete event (mimics deleteUserProfile functionality)
+// Delete event 
 exports.deleteEvent = async (req, res) => {
     try {
         const { eventId } = req.params;
@@ -125,13 +116,13 @@ exports.assignVolunteerToEvent = async (req, res) => {
         if (!event.assignedVolunteers.includes(volunteerId)) {
             event.assignedVolunteers.push(volunteerId);
             await event.save();
-            console.log(`✅ Volunteer ${volunteerId} assigned to event ${eventId}`);
+            console.log(` Volunteer ${volunteerId} assigned to event ${eventId}`);
         } else {
-            console.warn(`⚠️ Volunteer ${volunteerId} is already assigned to event ${eventId}`);
+            console.warn(` Volunteer ${volunteerId} is already assigned to event ${eventId}`);
         }
         res.json({ message: `Volunteer ${volunteerId} assigned to event ${eventId}`, event });
     } catch (error) {
-        console.error("❌ Error assigning volunteer to event:", error);
+        console.error(" Error assigning volunteer to event:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };

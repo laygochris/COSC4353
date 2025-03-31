@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/EventManagement.css";
 
 const EventManagement = () => {
@@ -10,16 +10,30 @@ const EventManagement = () => {
     urgency: "",
     date: "",
   });
-
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [events, setEvents] = useState([]);
 
-  const skillsOptions = [
-    "Communication",
-    "Leadership",
-    "Technical",
-    "Teamwork",
-  ];
+  const skillsOptions = ["Communication", "Leadership", "Technical", "Teamwork"];
   const urgencyLevels = ["low", "medium", "high"];
+
+  // Fetch existing events when the component mounts
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/api/events");
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      setEvents(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      setEvents([]);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,31 +41,24 @@ const EventManagement = () => {
   };
 
   const handleSkillsChange = (e) => {
-    const selectedOptions = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
+    const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
     setFormData((prevData) => ({ ...prevData, skills: selectedOptions }));
-    console.log(selectedOptions); // Log the selected skills array to the console
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const token = localStorage.getItem("token"); // Get token from localStorage
-    const userId = localStorage.getItem("userId"); // Get userId from localStorage
+    const token = localStorage.getItem("token");
 
     const payload = {
       name: formData.name,
       description: formData.description,
       location: formData.location,
-      requiredSkills: formData.skills, // should be an actual array
+      requiredSkills: formData.skills,
       urgency: formData.urgency,
       date: formData.date,
       status: "upcoming",
     };
-
-    console.log("Payload being sent:", payload); // Log the payload
 
     try {
       const response = await fetch("http://localhost:5001/api/events/create", {
@@ -68,6 +75,8 @@ const EventManagement = () => {
       }
 
       alert("Event created successfully!");
+      // Refresh the events list after creation
+      fetchEvents();
       setFormData({
         name: "",
         description: "",
@@ -85,10 +94,7 @@ const EventManagement = () => {
   return (
     <div className="container event-management-container text-center py-5">
       <h1 className="text-danger">Event Management</h1>
-      <form
-        className="event-form mx-auto p-4 shadow rounded"
-        onSubmit={handleSubmit}
-      >
+      <form className="event-form mx-auto p-4 shadow rounded" onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="form-label fw-bold">Event Name:</label>
           <input
@@ -173,14 +179,27 @@ const EventManagement = () => {
           />
         </div>
 
-        <button
-          type="submit"
-          className="btn btn-primary w-100"
-          disabled={isSubmitting}
-        >
+        <button type="submit" className="btn btn-primary w-100" disabled={isSubmitting}>
           {isSubmitting ? "Creating..." : "Create Event"}
         </button>
       </form>
+      <div className="mt-5">
+        <h2>Manage Existing Events</h2>
+        {events.length === 0 ? (
+          <p>No events available.</p>
+        ) : (
+          <ul className="list-group">
+            {events.map((event) => (
+              <li key={event._id} className="list-group-item">
+                <div>
+                  <strong>{event.name}</strong> -{" "}
+                  {new Date(event.date).toLocaleDateString()} - {event.location}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };

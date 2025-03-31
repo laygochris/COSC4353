@@ -17,15 +17,16 @@ const Events = () => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const data = await response.json();
-      setEvents(Array.isArray(data) ? data : []); 
+      setEvents(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching events:", error);
-      setEvents([]); 
+      setEvents([]);
     }
   };
 
   const handleEventClick = (event) => {
-    setSelectedEvent(selectedEvent?.id === event.id ? null : event);
+    // Toggle event details based on _id
+    setSelectedEvent(selectedEvent?._id === event._id ? null : event);
   };
 
   const handleFilterChange = (skill) => {
@@ -34,11 +35,19 @@ const Events = () => {
     );
   };
 
+  // Remove event from local state (UI only)
+  const removeEvent = (eventId) => {
+    setEvents((prevEvents) => prevEvents.filter((event) => event._id !== eventId));
+  };
+
   const filteredEvents =
     selectedSkills.length > 0
-      ? events.filter((event) =>
-          event && event.required_skills && Array.isArray(event.required_skills) &&
-          selectedSkills.some((skill) => event.required_skills.includes(skill))
+      ? events.filter(
+          (event) =>
+            event &&
+            event.requiredSkills &&
+            Array.isArray(event.requiredSkills) &&
+            selectedSkills.some((skill) => event.requiredSkills.includes(skill))
         )
       : events;
 
@@ -72,44 +81,57 @@ const Events = () => {
       </Row>
       <Row className="justify-content-center">
         {filteredEvents.length > 0 ? (
-          filteredEvents.map((event) => (
-            event && (
-              <Col md={6} key={event.id} className="mb-3">
-                <Card>
-                  <Card.Body>
-                    <Card.Title>{event.name}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">
-                      {event.location}
-                    </Card.Subtitle>
-                    <Card.Text>
-                      <strong>Date:</strong> {event.date}
-                    </Card.Text>
-                    <div className="mb-2">
-                      {event.required_skills && Array.isArray(event.required_skills) && event.required_skills.map((skill) => (
-                        <Badge bg="secondary" key={skill} className="me-1">
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
-                    <Button
-                      style={{
-                        backgroundColor: "#2C365e",
-                        borderColor: "#8A95A5",
-                        color: "white",
-                      }}
-                      className="w-100"
-                      onClick={() => handleEventClick(event)}
-                    >
-                      {selectedEvent?.id === event.id ? "Hide Details" : "View Details"}
-                    </Button>
-                    {selectedEvent?.id === event.id && (
-                      <Card.Text className="mt-2">{event.description}</Card.Text>
-                    )}
-                  </Card.Body>
-                </Card>
-              </Col>
-            )
-          ))
+          filteredEvents.map(
+            (event) =>
+              event && (
+                <Col md={6} key={event._id} className="mb-3">
+                  <Card>
+                    <Card.Header className="d-flex justify-content-between align-items-center">
+                      <span>{event.name}</span>
+                      <Button
+                        variant="light"
+                        size="sm"
+                        onClick={() => removeEvent(event._id)}
+                        style={{ fontWeight: "bold", lineHeight: 1 }}
+                      >
+                        ×
+                      </Button>
+                    </Card.Header>
+                    <Card.Body>
+                      <Card.Subtitle className="mb-2 text-muted">
+                        {event.location}
+                      </Card.Subtitle>
+                      <Card.Text>
+                        <strong>Date:</strong> {event.date.slice(0, 10)}
+                      </Card.Text>
+                      <div className="mb-2">
+                        {event.requiredSkills &&
+                          Array.isArray(event.requiredSkills) &&
+                          event.requiredSkills.map((skill) => (
+                            <Badge bg="secondary" key={skill} className="me-1">
+                              {skill}
+                            </Badge>
+                          ))}
+                      </div>
+                      <Button
+                        style={{
+                          backgroundColor: "#2C365e",
+                          borderColor: "#8A95A5",
+                          color: "white",
+                        }}
+                        className="w-100"
+                        onClick={() => handleEventClick(event)}
+                      >
+                        {selectedEvent?._id === event._id ? "Hide Details" : "View Details"}
+                      </Button>
+                      {selectedEvent?._id === event._id && (
+                        <Card.Text className="mt-2">{event.description}</Card.Text>
+                      )}
+                    </Card.Body>
+                  </Card>
+                </Col>
+              )
+          )
         ) : (
           <p className="text-center">No events found.</p>
         )}
