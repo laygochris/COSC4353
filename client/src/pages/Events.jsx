@@ -35,10 +35,27 @@ const Events = () => {
     );
   };
 
-  // Remove event from local state (UI only)
-  const removeEvent = (eventId) => {
+  // Remove event completely
+const removeEvent = async (eventId) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`http://localhost:5001/api/events/${eventId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to delete event");
+    }
+    // Remove the event from the local state after successful deletion
     setEvents((prevEvents) => prevEvents.filter((event) => event._id !== eventId));
-  };
+  } catch (error) {
+    console.error("Error deleting event:", error);
+  }
+};
+
 
   const filteredEvents =
     selectedSkills.length > 0
