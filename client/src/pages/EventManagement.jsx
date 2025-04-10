@@ -40,33 +40,6 @@ const EventManagement = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  // can click individual options to select/deselect without shift-click
-  const renderSkillsSelect = () => (
-    <div className="mb-3">
-      <label className="form-label fw-bold">Required Skills:</label>
-      <select name="skills" className="form-select" multiple value={formData.skills}>
-        {skillsOptions.map((skill) => (
-          <option
-            key={skill}
-            value={skill}
-            onMouseDown={(e) => {
-              e.preventDefault(); // Prevent default multi-select behavior
-              let newSelection;
-              if (formData.skills.includes(skill)) {
-                newSelection = formData.skills.filter((s) => s !== skill);
-              } else {
-                newSelection = [...formData.skills, skill];
-              }
-              setFormData((prevData) => ({ ...prevData, skills: newSelection }));
-            }}
-          >
-            {skill}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -97,9 +70,7 @@ const EventManagement = () => {
       }
 
       alert("Event created successfully!");
-      // Refresh the events list after creation
-      fetchEvents();
-      // Clear the form after successful submission
+      fetchEvents(); // Refresh the events list after creation
       setFormData({
         name: "",
         description: "",
@@ -107,11 +78,28 @@ const EventManagement = () => {
         skills: [],
         urgency: "",
         date: "",
-      });
+      }); // Clear the form
     } catch (error) {
       alert("Error creating event. Please try again.");
     }
     setIsSubmitting(false);
+  };
+
+  // Function to handle report downloads
+  const handleDownload = async (format) => {
+    try {
+      const url = `http://localhost:5001/api/reports/combined?format=${format}`;
+      const response = await fetch(url, { method: "GET" });
+
+      if (!response.ok) {
+        throw new Error("Failed to download the report");
+      }
+
+      window.open(url, "_blank");
+    } catch (error) {
+      console.error("Error downloading report:", error);
+      alert("Failed to download the report. Please try again.");
+    }
   };
 
   return (
@@ -154,7 +142,25 @@ const EventManagement = () => {
           />
         </div>
 
-        {renderSkillsSelect()}
+        <div className="mb-3">
+          <label className="form-label fw-bold">Required Skills:</label>
+          <select
+            name="skills"
+            className="form-select"
+            multiple
+            value={formData.skills}
+            onChange={(e) => {
+              const options = Array.from(e.target.selectedOptions, (option) => option.value);
+              setFormData((prevData) => ({ ...prevData, skills: options }));
+            }}
+          >
+            {skillsOptions.map((skill) => (
+              <option key={skill} value={skill}>
+                {skill}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="mb-3">
           <label className="form-label fw-bold">Urgency:</label>
@@ -190,11 +196,28 @@ const EventManagement = () => {
           {isSubmitting ? "Creating..." : "Create Event"}
         </button>
       </form>
+
+      {/* Add buttons for downloading combined reports */}
+      <div className="mt-5">
+        <h3 className="mb-3">Download Combined Report</h3>
+        <button
+          onClick={() => handleDownload("pdf")}
+          className="btn btn-primary m-2"
+          aria-label="Download Combined Report as PDF"
+        >
+          Download Combined Report (PDF)
+        </button>
+        <button
+          onClick={() => handleDownload("csv")}
+          className="btn btn-secondary m-2"
+          aria-label="Download Combined Report as CSV"
+        >
+          Download Combined Report (CSV)
+        </button>
+      </div>
     </div>
   );
 };
 
 export default EventManagement;
- 
-
 
