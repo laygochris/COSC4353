@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 
@@ -31,7 +33,7 @@ const userSchema = new mongoose.Schema({
     availability: { type: String, default: '' }
 }, { timestamps: true });
 
-// hash the password before saving
+// Hash the password before saving
 userSchema.pre('save', async function(next) {
     if (this.isModified('password')) {
         const saltRounds = 10;

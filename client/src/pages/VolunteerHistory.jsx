@@ -8,13 +8,14 @@ const VolunteerHistory = () => {
 
   useEffect(() => {
     const fetchVolunteerHistory = async () => {
-      try {
-        const token = localStorage.getItem("token"); // Get token from localStorage
-        const userId = localStorage.getItem("userId"); // Get userId from localStorage
+      const token = localStorage.getItem("token"); // Get token from localStorage
+      const userId = localStorage.getItem("userId"); // Get userId from localStorage
 
-        if (!token || !userId) {
-          throw new Error("User not authenticated");
-        }
+      if (!token || !userId) {
+        throw new Error("User not authenticated");
+      }
+      
+      try {
 
         console.log("Attempting to find volunteer history for user:", userId);
 
