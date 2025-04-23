@@ -12,6 +12,7 @@ import UserProfile from './pages/UserProfile';
 import VolunteerHistory from './pages/VolunteerHistory';
 import VolunteerMatching from './pages/VolunteerMatching';
 import Events from './pages/Events';
+import VolunteerEvents from './pages/VolunteerEvents';
 
 function App() {
   const [userRole, setUserRole] = useState("");
@@ -37,8 +38,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/userProfile" element={<UserProfile />} />
           <Route path="/volunteerHistory" element={<VolunteerHistory />} />
-          <Route path="/events" element={<Events />} />
-
+          <Route path="/admin/events" element={<Events />} />
+          <Route path="/events" element={<VolunteerEvents />} />
           <Route
             path="/volunteerMatchingForm"
             element={userRole === "admin" ? <VolunteerMatching userRole={userRole} /> : <Navigate to="/home" />}

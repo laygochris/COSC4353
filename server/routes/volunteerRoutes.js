@@ -5,14 +5,16 @@ const {
     getVolunteerByEmail,
     matchVolunteersToEvent,
     createVolunteer,
-    getVolunteerById
+    getVolunteerById,
+    matchVolunteerToEvent, 
 } = require("../controllers/volunteerController");
 
-router.get("/", getVolunteers);  // Should match the imported function name
-router.get("/volunteer/email", getVolunteerByEmail);  // Same here
-router.get("/volunteer/:volunteerId", getVolunteerById);  // Same here
-router.get("/match/:volunteerId", matchVolunteersToEvent);  // And here
-router.post("/volunteer", createVolunteer);  // Lastly here
-
+// Routes
+router.get("/", getVolunteers);
+router.get("/volunteer/email", getVolunteerByEmail);
+router.get("/volunteer/:volunteerId", getVolunteerById);
+router.get("/match/:volunteerId", matchVolunteersToEvent);
+router.post("/volunteer", createVolunteer);
+router.post("/events/:eventId/match", matchVolunteerToEvent);
 
 module.exports = router;

@@ -110,3 +110,31 @@ exports.createVolunteer = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+// Match a volunteer to a specific event
+exports.matchVolunteerToEvent = async (req, res) => {
+    const { eventId } = req.params;
+    const { volunteerId } = req.body;
+  
+    console.log("🚀 Match request received:", { eventId, volunteerId }); // ✅ add this
+  
+    if (!mongoose.Types.ObjectId.isValid(eventId) || !mongoose.Types.ObjectId.isValid(volunteerId)) {
+      return res.status(400).json({ message: "Invalid eventId or volunteerId format" });
+    }
+  
+    try {
+      const event = await Event.findById(eventId);
+      if (!event) return res.status(404).json({ message: "Event not found" });
+  
+      if (!event.assignedVolunteers.includes(volunteerId)) {
+        event.assignedVolunteers.push(volunteerId);
+        await event.save();
+      }
+  
+      res.status(200).json({ message: "Volunteer matched to event successfully" });
+    } catch (error) {
+      console.error("❌ Error matching volunteer to event:", error);
+      res.status(500).json({ message: "Server error during volunteer matching" });
+    }
+  };
+  

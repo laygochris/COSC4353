@@ -97,9 +97,17 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
                 Volunteer Matching Form
               </Nav.Link>
             )}
-            <Nav.Link as={Link} to="/events">
-              Events
-            </Nav.Link>
+            {userType === "admin" && (
+              <Nav.Link as={Link} to="/admin/events">
+                Events
+              </Nav.Link>
+            )}
+            {userType === "volunteer" && (
+              <Nav.Link as={Link} to="/events">
+                Events
+              </Nav.Link>
+            )}
+
           </Nav>
           <Nav className="ms-auto">
             <Navbar.Text className="me-3">

@@ -25,7 +25,7 @@ const seedEvents = async () => {
                 urgency: "high",
                 status: "upcoming",
                 description: "Help distribute food to families in need. Volunteers will assist with sorting, packing, and distributing food items.",
-                assignedVolunteers: [aliceUser?._id, bobUser?._id].filter(Boolean) // ✅ Only push valid ObjectIds
+                assignedVolunteers: [aliceUser?._id, bobUser?._id].filter(Boolean) 
             },
             {
                 name: "Park Cleanup Initiative",
@@ -65,6 +65,56 @@ const seedEvents = async () => {
                 urgency: "medium",
                 status: "upcoming",
                 description: "Help take care of rescued animals by cleaning enclosures, feeding, and assisting with pet adoptions.",
+                assignedVolunteers: []
+            },
+            {
+                name: "Team Up for Houston Cleanup",
+                description: "Join a citywide effort to clean up streets, parks, and playgrounds with fellow volunteers.",
+                location: "Houston Heights, TX",
+                date: "2025-05-10T08:30:00.000Z",
+                requiredSkills: ["Teamwork"],
+                status: "upcoming",
+                urgency: "medium",
+                assignedVolunteers: []
+            },
+            {
+                name: "Leadership Workshop for Youth Mentors",
+                description: "Facilitate a leadership training workshop for teen volunteers mentoring younger students.",
+                location: "Emancipation Community Center, Houston, TX",
+                date: "2025-06-03T10:00:00.000Z",
+                requiredSkills: ["Leadership"],
+                status: "upcoming",
+                urgency: "high",
+                assignedVolunteers: []
+            },
+            {
+                name: "Speak Up Saturday: Public Speaking Bootcamp",
+                description: "Help middle school students build confidence and communication skills through speaking games and mini-presentations.",
+                location: "Northside Community Hall, Houston, TX",
+                date: "2025-05-18T13:00:00.000Z",
+                requiredSkills: ["Communication"],
+                status: "upcoming",
+                urgency: "medium",
+                assignedVolunteers: []
+            },
+            {
+                name: "Organize to Optimize: Donation Sorting Drive",
+                description: "Work with a team to sort, label, and organize incoming donations for local shelters and families.",
+                location: "Galleria Donations Warehouse, Houston, TX",
+                date: "2025-04-30T09:00:00.000Z",
+                requiredSkills: ["Organization"],
+                status: "upcoming",
+                urgency: "low",
+                assignedVolunteers: []
+            },
+            {
+                name: "Pet Pal Day at the Shelter",
+                description: "Assist with animal care tasks such as feeding, walking, cleaning, and cuddling pets awaiting adoption.",
+                location: "Pearland Animal Shelter, Pearland, TX",
+                date: "2025-05-12T14:00:00.000Z",
+                requiredSkills: ["Animal Care"],
+                status: "upcoming",
+                urgency: "high",
                 assignedVolunteers: []
             }
         ];

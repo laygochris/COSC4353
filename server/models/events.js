@@ -4,7 +4,7 @@ const eventSchema = new mongoose.Schema({
     name: { type: String, required: true },
     date: { type: Date, required: true },
     location: { type: String, required: true },
-    requiredSkills: { type: [String], required: true }, // ✅ Ensure it matches seed data
+    requiredSkills: { type: [String], required: true }, 
     urgency: { type: String, enum: ["low", "medium", "high", "very high"], required: true },
     status: { type: String, enum: ["completed", "upcoming", "canceled"], required: true },
     description: { type: String, required: true },
