@@ -32,9 +32,7 @@ function App() {
       .then((data) => console.log(data))
       .catch((err) => console.error(err));
   }, []);
-
   
-
   // Connect to Socket.IO
   useEffect(() => {
     const socket = io("http://localhost:5001"); 
@@ -80,7 +78,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/userProfile" element={<UserProfile />} />
           <Route path="/volunteerHistory" element={<VolunteerHistory />} />
-          <Route path="/events" element={<Events />} />
+          <Route path="/events" element={<VolunteerEvents />} />
+          <Route path="/admin/events" element={<Events />} />
 
           <Route
             path="/volunteerMatchingForm"
