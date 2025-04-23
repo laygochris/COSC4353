@@ -3,7 +3,7 @@ import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, Container, Row, Col } from "react-bootstrap";
 
-const Login = ({ setLoggedIn, setUserRole }) => {
+const Login = ({ setLoggedIn, setUserRole, setUserID, setNotifications }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -20,23 +20,31 @@ const Login = ({ setLoggedIn, setUserRole }) => {
         },
         body: JSON.stringify({ email, password }),
       });
+
       if (!response.ok) {
         throw new Error("User not found or invalid credentials");
       }
 
       const data = await response.json();
-      setMessage(data.message);
+      const { token, user } = data;
 
-      if (data.token) {
-        console.log("HELLO FROM TOKEN");
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("userId", data.user._id);
-        setLoggedIn(true);
-        setUserRole(data.user.userType); // Update userRole state
-      }
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", user._id);
+      setLoggedIn(true);
+      setUserRole(user.userType);
+      setUserID(user._id); // use _id instead of id
 
-      // console.log("Logging in with:", { email, password });
+      // ✅ Fetch notifications and update immediately
+      const res = await fetch(`http://localhost:5001/api/notifications`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const notifs = await res.json();
+      console.log("User's notifications:", notifs);
+      //  setNotifications(notifs); // ✅ Fix: after fetching
+
+      console.log("Redirecting to /home...");
       navigate("/home");
+      window.location.reload();
     } catch (error) {
       console.error("Error during login:", error);
     }

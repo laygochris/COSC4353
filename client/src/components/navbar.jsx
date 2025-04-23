@@ -1,58 +1,95 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Card, Container, Row, Col } from "react-bootstrap";
+import { io } from "socket.io-client";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
-import "./navbar.css";
+import Container from "react-bootstrap/Container";
+import { CgProfile } from "react-icons/cg";
 import logo from "../images/ih_logo_navbar.png";
 import Notifications from "../pages/Notifications";
-import { CgProfile } from "react-icons/cg";
+import "./navbar.css";
 
-const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
-  const [username, setUsername] = useState("");
+const CustomNavbar = ({
+  loggedIn,
+  setLoggedIn,
+  setUserRole,
+  notifications,
+  setNotifications,
+}) => {
+  const [username, setUsername] = useState("Guest");
   const [userType, setUserType] = useState("");
   const navigate = useNavigate();
 
-  const fetchUserProfile = useCallback(async () => {
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId"); // Now stored as the ObjectId (_id)
-    console.log("NAVBAR has userId:", userId);
+  const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
 
-    if (token && userId) {
-      try {
-        const response = await fetch(
-          `http://localhost:5001/api/user/profile/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
-        console.log("Fetched user data:", data);
-        // Assuming your API returns the user credential details, which now include userType
-        setUsername(data.username);
-        setUserType(data.userType);
-        setUserRole(data.userType);
-        console.log("userType:", data.userType);
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
+  // ✅ Fetch user profile
+  const fetchUserProfile = async () => {
+    if (!userId || !token) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/user/profile/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      setUsername(data.username || "Guest");
+      setUserType(data.userType || "");
+      setUserRole(data.userType || "");
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  };
+
+  // ✅ Fetch notifications
+  const fetchNotifications = async () => {
+    if (!userId || !token) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:5001/api/notifications/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await res.json();
+      setNotifications(data);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (loggedIn && userId) {
+      fetchUserProfile();
+      fetchNotifications();
     } else {
       setUsername("Guest");
       setUserType("");
       setUserRole("");
     }
-  }, [setUserRole]);
+  }, [loggedIn, userId]);
 
+  // ✅ Real-time socket connection
   useEffect(() => {
-    fetchUserProfile();
-  }, [loggedIn, fetchUserProfile]);
+    if (!loggedIn || !userId) return;
 
-  useEffect(() => {
-    console.log("Username:", username);
-    console.log("UserType:", userType);
-  }, [username, userType]);
+    const socket = io("http://localhost:5001");
+
+    socket.on("notificationAssigned", (data) => {
+      if (data.userID === userId) {
+        setNotifications((prev) => [...prev, data]);
+      }
+    });
+
+    return () => socket.disconnect();
+  }, [loggedIn, userId]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -61,7 +98,9 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
     setUserType("");
     setUserRole("");
     setLoggedIn(false);
+    setNotifications([]);
     navigate("/login");
+    window.location.reload();
   };
 
   return (
@@ -73,7 +112,7 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
-            {!username || username === "Guest" ? (
+            {!loggedIn ? (
               <Nav.Link as={Link} to="/login">
                 Login
               </Nav.Link>
@@ -102,13 +141,11 @@ const CustomNavbar = ({ loggedIn, setLoggedIn, setUserRole }) => {
             </Nav.Link>
           </Nav>
           <Nav className="ms-auto">
-            <Navbar.Text className="me-3">
-              Signed in as {username || "Guest"}
-            </Navbar.Text>
+            <Navbar.Text className="me-3">Signed in as {username}</Navbar.Text>
             <Nav.Link as={Link} to="/userProfile">
               <CgProfile size={25} />
             </Nav.Link>
-            <Notifications />
+            <Notifications notifications={notifications || []} />
           </Nav>
         </Navbar.Collapse>
       </Container>
