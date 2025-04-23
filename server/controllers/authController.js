@@ -40,7 +40,8 @@ exports.registerUser = async (req, res) => {
     const newCredential = new UserCredential({
       username,
       email,
-      password
+      password,
+      userType: "volunteer"
     });
     await newCredential.save();
 
