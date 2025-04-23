@@ -96,7 +96,7 @@ const EventManagement = () => {
 
   return (
     <div className="container py-5">
-      <h1 className="text-center text-primary mb-4">📋 Event Management</h1>
+      <h1 className="text-center mb-4">Event Management</h1>
 
       <form onSubmit={handleSubmit} className="shadow p-4 rounded bg-white mb-5">
         <h4 className="mb-4 text-start">➕ Create a New Event</h4>
@@ -144,7 +144,7 @@ const EventManagement = () => {
           </div>
         </div>
 
-        <button type="submit" className="btn btn-primary w-100 mt-4" disabled={isSubmitting}>
+        <button type="submit" className="btn w-100 mt-4" style={{ backgroundColor: "#60993E", borderColor: "#60993E", color: "white" }} disabled={isSubmitting}>
           {isSubmitting ? <><Spinner size="sm" animation="border" /> Creating...</> : "Create Event"}
         </button>
       </form>

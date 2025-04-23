@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Select from "react-select";
-import { Container, Card, Form, Button } from "react-bootstrap";
+import { Container, Card, Form, Button, Row, Col, ListGroup, Spinner } from "react-bootstrap";
 import "./UserProfile.css";
 
 const UserProfile = () => {
@@ -12,7 +12,7 @@ const UserProfile = () => {
     state: "",
     zip: "",
     skills: [],
-    preferences: "",
+    preferences: [],
     availability: [],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,6 +34,13 @@ const UserProfile = () => {
     setUserInfo((prev) => ({
       ...prev,
       skills: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
+    }));
+  };
+
+  const handlePreferencesChange = (selectedOptions) => {
+    setUserInfo((prev) => ({
+      ...prev,
+      preferences: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
     }));
   };
 
@@ -91,80 +98,111 @@ const UserProfile = () => {
   return (
     <Container className="py-5">
       <Card className="shadow p-4">
-        <h2 className="mb-4">📝 Update Profile</h2>
+        <h3 className="mb-4 fw-semibold">📝 Update Your Profile</h3>
         <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Full Name</Form.Label>
-            <Form.Control name="fullName" value={userInfo.fullName} onChange={handleChange} isInvalid={!!errors.fullName} />
-            <Form.Control.Feedback type="invalid">{errors.fullName}</Form.Control.Feedback>
-          </Form.Group>
+          <Row className="g-3">
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>Full Name</Form.Label>
+                <Form.Control name="fullName" value={userInfo.fullName} onChange={handleChange} isInvalid={!!errors.fullName} />
+                <Form.Control.Feedback type="invalid">{errors.fullName}</Form.Control.Feedback>
+              </Form.Group>
+            </Col>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Address 1</Form.Label>
-            <Form.Control name="address1" value={userInfo.address1} onChange={handleChange} isInvalid={!!errors.address1} />
-            <Form.Control.Feedback type="invalid">{errors.address1}</Form.Control.Feedback>
-          </Form.Group>
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>Zip Code</Form.Label>
+                <Form.Control name="zip" value={userInfo.zip} onChange={handleChange} isInvalid={!!errors.zip} />
+                <Form.Control.Feedback type="invalid">{errors.zip}</Form.Control.Feedback>
+              </Form.Group>
+            </Col>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Address 2 (optional)</Form.Label>
-            <Form.Control name="address2" value={userInfo.address2} onChange={handleChange} />
-          </Form.Group>
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>Address 1</Form.Label>
+                <Form.Control name="address1" value={userInfo.address1} onChange={handleChange} isInvalid={!!errors.address1} />
+                <Form.Control.Feedback type="invalid">{errors.address1}</Form.Control.Feedback>
+              </Form.Group>
+            </Col>
 
-          <Form.Group className="mb-3">
-            <Form.Label>City</Form.Label>
-            <Form.Control name="city" value={userInfo.city} onChange={handleChange} isInvalid={!!errors.city} />
-            <Form.Control.Feedback type="invalid">{errors.city}</Form.Control.Feedback>
-          </Form.Group>
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>Address 2 (optional)</Form.Label>
+                <Form.Control name="address2" value={userInfo.address2} onChange={handleChange} />
+              </Form.Group>
+            </Col>
 
-          <Form.Group className="mb-3">
-            <Form.Label>State</Form.Label>
-            <Form.Select name="state" value={userInfo.state} onChange={handleChange} isInvalid={!!errors.state}>
-              <option value="">Select state</option>
-              {states.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
-              ))}
-            </Form.Select>
-            <Form.Control.Feedback type="invalid">{errors.state}</Form.Control.Feedback>
-          </Form.Group>
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>City</Form.Label>
+                <Form.Control name="city" value={userInfo.city} onChange={handleChange} isInvalid={!!errors.city} />
+                <Form.Control.Feedback type="invalid">{errors.city}</Form.Control.Feedback>
+              </Form.Group>
+            </Col>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Zip Code</Form.Label>
-            <Form.Control name="zip" value={userInfo.zip} onChange={handleChange} isInvalid={!!errors.zip} />
-            <Form.Control.Feedback type="invalid">{errors.zip}</Form.Control.Feedback>
-          </Form.Group>
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>State</Form.Label>
+                <Form.Select name="state" value={userInfo.state} onChange={handleChange} isInvalid={!!errors.state}>
+                  <option value="">Select state</option>
+                  {states.map((s) => (
+                    <option key={s.value} value={s.value}>{s.label}</option>
+                  ))}
+                </Form.Select>
+                <Form.Control.Feedback type="invalid">{errors.state}</Form.Control.Feedback>
+              </Form.Group>
+            </Col>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Skills</Form.Label>
-            <Select
-              isMulti
-              options={skillsOptions}
-              value={skillsOptions.filter((opt) => userInfo.skills.includes(opt.value))}
-              onChange={handleSkillsChange}
-              classNamePrefix="react-select"
-            />
-            {errors.skills && <div className="text-danger mt-1 small">{errors.skills}</div>}
-          </Form.Group>
+            <Col md={12}>
+              <Form.Group>
+                <Form.Label>Skills</Form.Label>
+                <Select
+                  isMulti
+                  options={skillsOptions}
+                  value={skillsOptions.filter((opt) => userInfo.skills.includes(opt.value))}
+                  onChange={handleSkillsChange}
+                  classNamePrefix="react-select"
+                />
+                {errors.skills && <div className="text-danger mt-1 small">{errors.skills}</div>}
+              </Form.Group>
+            </Col>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Preferences</Form.Label>
-            <Form.Control as="textarea" rows={3} name="preferences" value={userInfo.preferences} onChange={handleChange} />
-          </Form.Group>
+            <Col md={12}>
+              <Form.Group>
+                <Form.Label>Preferred Skills</Form.Label>
+                <Select
+                  isMulti
+                  options={skillsOptions}
+                  value={skillsOptions.filter((opt) => userInfo.preferences.includes(opt.value))}
+                  onChange={handlePreferencesChange}
+                  classNamePrefix="react-select"
+                />
+              </Form.Group>
+            </Col>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Availability</Form.Label>
-            <Form.Control type="date" onChange={handleDateChange} isInvalid={!!errors.availability} />
-            <Form.Control.Feedback type="invalid">{errors.availability}</Form.Control.Feedback>
-            <ul className="list-group mt-2">
-              {userInfo.availability.map((date, index) => (
-                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                  {date}
-                  <Button variant="danger" size="sm" onClick={() => removeDate(date)}>✕</Button>
-                </li>
-              ))}
-            </ul>
-          </Form.Group>
+            <Col md={12}>
+              <Form.Group>
+                <Form.Label>Availability</Form.Label>
+                <Form.Control type="date" onChange={handleDateChange} isInvalid={!!errors.availability} />
+                <Form.Control.Feedback type="invalid">{errors.availability}</Form.Control.Feedback>
+                <ListGroup className="mt-2">
+                  {userInfo.availability.map((date, index) => (
+                    <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
+                      {date}
+                      <Button variant="outline-danger" size="sm" onClick={() => removeDate(date)}>✕</Button>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              </Form.Group>
+            </Col>
+          </Row>
 
-          <Button variant="primary" type="submit" className="w-100" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            className="w-100 mt-4"
+            style={{ backgroundColor: "#60993E", borderColor: "#60993E" }}
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Saving..." : "Save Profile"}
           </Button>
         </Form>
