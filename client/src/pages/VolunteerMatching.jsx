@@ -56,7 +56,7 @@ const VolunteerMatching = ({ userRole }) => {
       }
   
       setSelectedVolunteer({
-        _id: data.volunteer._id, // ✅ explicitly assign
+        _id: data.volunteer._id, 
         name: `${data.volunteer?.firstName || ''} ${data.volunteer?.lastName || ''}`,
         skills: data.volunteer?.skills || [],
         matchedEvents: data.matchedEvents,

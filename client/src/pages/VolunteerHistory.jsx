@@ -41,7 +41,7 @@ const VolunteerHistory = () => {
       case "low":
         return "#60993E";
       default:
-        return "#6c757d";
+        return "#4b0e0e";
     }
   };
 
@@ -52,7 +52,7 @@ const VolunteerHistory = () => {
       case "completed":
         return "#60993E";
       default:
-        return "#6c757d";
+        return "#931621";
     }
   };
 

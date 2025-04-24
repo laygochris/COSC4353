@@ -29,7 +29,7 @@ const Login = ({ setLoggedIn, setUserRole, setUserID, setNotifications }) => {
       const { token, user } = data;
 
       localStorage.setItem("token", token);
-      localStorage.setItem("userId", user._id);
+      localStorage.setItem("userId", user._id || user.id);
       setLoggedIn(true);
       setUserRole(user.userType);
       setUserID(user._id); // use _id instead of id

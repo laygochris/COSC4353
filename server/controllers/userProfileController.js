@@ -30,55 +30,52 @@ exports.getUserProfile = async (req, res) => {
 
 // UPDATE user profile
 exports.updateUserProfile = async (req, res) => {
+    const { userId } = req.params; // ✅ change this line
     const errors = validationResult(req);
+  
     if (!errors.isEmpty()) {
-        console.log(`⚠️ Validation errors:`, errors.array());
-        return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ errors: errors.array() });
     }
-
-    const {
-        userId,
+  
+    try {
+      const {
         fullName,
         address,
         city,
         state,
-        zip,
+        zipcode,
         skills,
-        preference,
+        preferences,
         availability
-    } = req.body;
-
-    try {
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found in database.' });
-        }
-
-        if (fullName) {
-            user.firstName = fullName.split(" ")[0] || user.firstName;
-            user.lastName = fullName.split(" ")[1] || user.lastName;
-        }
-
-        user.address = address || user.address;
-        user.city = city || user.city;
-        user.state = state || user.state;
-        user.zip = zip || user.zip;
-        user.skills = skills || user.skills;
-        user.preference = preference || user.preference;
-        user.availability = availability || user.availability;
-
-        await user.save();
-
-        return res.status(200).json({
-            message: 'User profile updated successfully!',
-            profile: user,
-        });
+      } = req.body;
+  
+      const user = await User.findById(userId); // userId from params
+      if (!user) {
+        return res.status(404).json({ message: 'User not found in database.' });
+      }
+  
+      // Update fields
+      user.fullName = fullName || user.fullName;
+      user.address = address || user.address;
+      user.city = city || user.city;
+      user.state = state || user.state;
+      user.zipcode = zipcode || user.zipcode;
+      user.skills = skills || user.skills;
+      user.preferences = preferences || user.preferences;
+      user.availability = availability || user.availability;
+  
+      await user.save();
+  
+      return res.status(200).json({
+        message: 'User profile updated successfully!',
+        profile: user,
+      });
     } catch (error) {
-        console.error('Error updating user profile:', error);
-        return res.status(500).json({ message: 'Server error.' });
+      console.error('❌ Error updating user profile:', error);
+      return res.status(500).json({ message: 'Server error.' });
     }
-};
+  };
+  
 
 // DELETE user profile
 exports.deleteUserProfile = async (req, res) => {
