@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/VolunteerHistory.css";
+import { Spinner, Card } from "react-bootstrap";
 
 const VolunteerHistory = () => {
   const [volunteerEvents, setVolunteerEvents] = useState([]);
@@ -8,132 +8,156 @@ const VolunteerHistory = () => {
 
   useEffect(() => {
     const fetchVolunteerHistory = async () => {
-      const token = localStorage.getItem("token"); // Get token from localStorage
-      const userId = localStorage.getItem("userId"); // Get userId from localStorage
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
 
-      if (!token || !userId) {
-        throw new Error("User not authenticated");
-      }
-      
+      if (!token || !userId) return;
+
       try {
-
-        console.log("Attempting to find volunteer history for user:", userId);
-
-        // Make the API call using userId from localStorage
-        const response = await fetch(
-          `http://localhost:5001/api/volunteer-history/profile/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // Pass token as Authorization header
-            },
-          }
-        );
+        const response = await fetch(`http://localhost:5001/api/volunteer-history/profile/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         if (!response.ok) throw new Error("Failed to fetch volunteer history");
 
         const data = await response.json();
-        console.log("Fetched volunteer history:", data);
-
-        setVolunteerEvents(data); // Update the state with the fetched data
+        setVolunteerEvents(data);
       } catch (error) {
-        console.error("Error fetching volunteer history:", error);
+        console.error("Error:", error);
       } finally {
-        setLoading(false); // Set loading to false once the data is fetched
+        setLoading(false);
       }
     };
 
-    fetchVolunteerHistory(); // Call the function to fetch the volunteer history
-  }, []); // Empty dependency array to run once when the component mounts
+    fetchVolunteerHistory();
+  }, []);
 
-  return (
-    <div className="container mt-5">
-      <h1 className="text-center mb-4">Volunteer History</h1>
-      <div className="table-responsive">
-        {loading ? (
-          <p className="text-center">Loading...</p>
-        ) : (
-          <table className="table table-striped table-bordered">
-            <thead className="table custom-table-header">
-              <tr>
-                <th>#</th>
-                <th>Event Name</th>
-                <th>Event Description</th>
-                <th>Location</th>
-                <th>Required Skills</th>
-                <th>Urgency</th>
-                <th>Date</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {volunteerEvents.length > 0 ? (
-                volunteerEvents.map((event, index) => (
-                  <tr key={event.id}>
-                    <td>{index + 1}</td>
-                    <td>{event.name}</td>
-                    <td>{event.description}</td>
-                    <td>{event.location}</td>
-                    <td>
-                      {event.required_skills &&
-                      event.required_skills.length > 0 ? (
-                        event.required_skills.map((skill, skillIndex) => (
-                          <span
-                            key={skillIndex}
-                            className="badge bg-secondary me-1"
-                          >
-                            {skill}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="badge bg-secondary">N/A</span>
-                      )}
-                    </td>
-                    <td>
-                      <span
-                        className="badge"
-                        style={{
-                          backgroundColor:
-                            event.urgency === "High"
-                              ? "#931621"
-                              : event.urgency === "Medium"
-                              ? "#D9A404"
-                              : "#60993E",
-                          color: "white",
-                        }}
-                      >
-                        {event.urgency}
-                      </span>
-                    </td>
-                    <td>{event.date}</td>
-                    <td>
-                      <span
-                        className="badge"
-                        style={{
-                          backgroundColor:
-                            event.status === "Completed"
-                              ? "#60993E"
-                              : event.status === "Upcoming"
-                              ? "#2C365E"
-                              : "#931621",
-                          color: "white",
-                        }}
-                      >
-                        {event.status}
-                      </span>
-                    </td>
-                  </tr>
+  const getUrgencyColor = (urgency) => {
+    switch ((urgency || "").toLowerCase()) {
+      case "high":
+        return "#931621";
+      case "medium":
+        return "#D9A404";
+      case "low":
+        return "#60993E";
+      default:
+        return "#6c757d";
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch ((status || "").toLowerCase()) {
+      case "upcoming":
+        return "#2c365e";
+      case "completed":
+        return "#60993E";
+      default:
+        return "#6c757d";
+    }
+  };
+
+  const capitalize = (text) => {
+    if (!text) return "";
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  };
+
+  const renderEvents = (events) =>
+    events.map((event, index) => (
+      <div className="col-md-6" key={index}>
+        <Card className="shadow-sm h-100 border-0" style={{ backgroundColor: "#f8f9fa" }}>
+          <Card.Body>
+            <Card.Title className="mb-2 fw-semibold">{event.name}</Card.Title>
+            <Card.Subtitle className="mb-3 text-muted">{event.location}</Card.Subtitle>
+            <Card.Text className="mb-3">{event.description}</Card.Text>
+
+            <div className="mb-2">
+              <strong>Skills:</strong>{" "}
+              {event.requiredSkills && event.requiredSkills.length > 0 ? (
+                event.requiredSkills.map((skill, i) => (
+                  <span key={i} className="badge bg-secondary me-1">
+                    {skill}
+                  </span>
                 ))
               ) : (
-                <tr>
-                  <td colSpan="8" className="text-center">
-                    No volunteer history found.
-                  </td>
-                </tr>
+                <span className="badge bg-secondary">N/A</span>
               )}
-            </tbody>
-          </table>
-        )}
+            </div>
+
+            <div className="mb-2">
+              <strong>Urgency:</strong>{" "}
+              <span
+                className="badge"
+                style={{
+                  backgroundColor: getUrgencyColor(event.urgency),
+                  color: "white",
+                  padding: "0.35em 0.65em",
+                  fontSize: "0.75em",
+                  borderRadius: "0.25rem",
+                }}
+              >
+                {capitalize(event.urgency)}
+              </span>
+            </div>
+
+            <div className="mb-2">
+              <strong>Date:</strong>{" "}
+              {new Date(event.date).toISOString().slice(0, 10)}
+            </div>
+
+            <div>
+              <strong>Status:</strong>{" "}
+              <span
+                className="badge"
+                style={{
+                  backgroundColor: getStatusColor(event.status),
+                  color: "white",
+                  padding: "0.35em 0.65em",
+                  fontSize: "0.75em",
+                  borderRadius: "0.25rem",
+                }}
+              >
+                {capitalize(event.status)}
+              </span>
+            </div>
+          </Card.Body>
+        </Card>
       </div>
+    ));
+
+  const upcomingEvents = volunteerEvents.filter(event => event.status === "upcoming");
+  const pastEvents = volunteerEvents.filter(event => event.status !== "upcoming");
+
+  return (
+    <div className="container py-5">
+
+      {loading ? (
+        <div className="text-center">
+          <Spinner animation="border" variant="primary" />
+          <p className="mt-2">Fetching your records...</p>
+        </div>
+      ) : volunteerEvents.length === 0 ? (
+        <p className="text-center">No volunteer history found.</p>
+      ) : (
+        <>
+          {upcomingEvents.length > 0 && (
+            <>
+              <h2 className="mb-3">Upcoming Events</h2>
+              <div className="row g-4 mb-5">
+                {renderEvents(upcomingEvents)}
+              </div>
+            </>
+          )}
+
+          {pastEvents.length > 0 && (
+            <>
+              <h2 className="mb-3">Event History</h2>
+              <div className="row g-4">
+                {renderEvents(pastEvents)}
+              </div>
+            </>
+          )}
+        </>
+      )}
     </div>
   );
 };

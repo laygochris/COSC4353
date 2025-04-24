@@ -54,63 +54,6 @@ exports.getVolunteerById = async (req, res) => {
     }
 };
 
-// Match volunteers to events based on required skills
-exports.matchVolunteersToEvent = async (req, res) => {
-    try {
-        const { volunteerId } = req.params;
-
-        if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
-            return res.status(400).json({ message: "Invalid ObjectId format for volunteer" });
-        }
-
-        const volunteer = await User.findById(volunteerId).select("skills");
-        if (!volunteer) return res.status(404).json({ message: "Volunteer not found" });
-
-        const events = await Event.find();
-        const matchedEvents = events.map(event => {
-            const matchedSkills = event.requiredSkills.filter(skill => volunteer.skills.includes(skill));
-            const matchPercentage = (matchedSkills.length / event.requiredSkills.length) * 100;
-
-            return { ...event.toObject(), matchedSkills, matchPercentage };
-        }).filter(event => event.matchPercentage >= 50)
-          .sort((a, b) => b.matchPercentage - a.matchPercentage);
-
-        res.json({ volunteer, matchedEvents });
-    } catch (error) {
-        console.error("❌ Error matching volunteers to events:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-};
-
-// Create a new volunteer
-exports.createVolunteer = async (req, res) => {
-    try {
-        const { username, email, password, fullName, skills } = req.body;
-
-        if (!username || !email || !password || !fullName || !skills) {
-            return res.status(400).json({ message: "Missing required fields" });
-        }
-
-        const existingVolunteer = await User.findOne({ email });
-        if (existingVolunteer) return res.status(400).json({ message: "Volunteer with this email already exists" });
-
-        const newVolunteer = new User({
-            username,
-            email,
-            password,
-            fullName,
-            userType: "volunteer",
-            skills: Array.isArray(skills) ? skills : [skills],
-        });
-
-        await newVolunteer.save();
-        res.status(201).json({ message: "Volunteer created successfully", volunteerId: newVolunteer._id });
-    } catch (error) {
-        console.error("❌ Error creating volunteer:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-};
-
 // Match a volunteer to a specific event
 exports.matchVolunteerToEvent = async (req, res) => {
     const { eventId } = req.params;

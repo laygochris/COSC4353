@@ -23,7 +23,6 @@ const CustomNavbar = ({
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
 
-  // ✅ Fetch user profile
   const fetchUserProfile = async () => {
     if (!userId || !token) return;
 
@@ -45,7 +44,6 @@ const CustomNavbar = ({
     }
   };
 
-  // ✅ Fetch notifications
   const fetchNotifications = async () => {
     if (!userId || !token) return;
 
@@ -76,7 +74,6 @@ const CustomNavbar = ({
     }
   }, [loggedIn, userId]);
 
-  // ✅ Real-time socket connection
   useEffect(() => {
     if (!loggedIn || !userId) return;
 
@@ -105,56 +102,53 @@ const CustomNavbar = ({
 
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
-      <Container>
+      <Container fluid>
+        {/* Logo (left) */}
         <Navbar.Brand as={Link} to="/home">
           <img src={logo} alt="Impact Houston" className="navbar-logo" />
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="mx-auto">
-            {!loggedIn ? (
-              <Nav.Link as={Link} to="/login">
-                Login
-              </Nav.Link>
-            ) : (
-              <Nav.Link onClick={handleLogout} style={{ cursor: "pointer" }}>
-                Logout
-              </Nav.Link>
-            )}
-            {userType === "admin" && (
-              <Nav.Link as={Link} to="/eventManagement">
-                Event Management
-              </Nav.Link>
-            )}
-            {userType === "volunteer" && (
-              <Nav.Link as={Link} to="/volunteerHistory">
-                Volunteer History
-              </Nav.Link>
-            )}
-            {userType === "admin" && (
-              <Nav.Link as={Link} to="/volunteerMatchingForm">
-                Volunteer Matching Form
-              </Nav.Link>
-            )}
-            {userType === "admin" && (
-              <Nav.Link as={Link} to="/admin/events">
-                Events
-              </Nav.Link>
-            )}
-            {userType === "volunteer" && (
-              <Nav.Link as={Link} to="/events">
-                Events
-              </Nav.Link>
-            )}
 
-          </Nav>
-          <Nav className="ms-auto">
-            <Navbar.Text className="me-3">Signed in as {username}</Navbar.Text>
-            <Nav.Link as={Link} to="/userProfile">
-              <CgProfile size={25} />
-            </Nav.Link>
-            <Notifications notifications={notifications || []} />
-          </Nav>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+
+        {/* Nav Links + User Info */}
+        <Navbar.Collapse id="basic-navbar-nav">
+          <div className="d-flex justify-content-between align-items-center w-100">
+
+            {/* Centered Nav Links */}
+            <Nav className="mx-auto">
+              {!loggedIn ? (
+                <Nav.Link as={Link} to="/login">Login</Nav.Link>
+              ) : (
+                <Nav.Link onClick={handleLogout} style={{ cursor: "pointer" }}>
+                  Logout
+                </Nav.Link>
+              )}
+
+              {userType === "admin" && (
+                <>
+                  <Nav.Link as={Link} to="/eventManagement">Event Management</Nav.Link>
+                  <Nav.Link as={Link} to="/volunteerMatchingForm">Volunteer Matching</Nav.Link>
+                  <Nav.Link as={Link} to="/admin/events">Events</Nav.Link>
+                </>
+              )}
+
+              {userType === "volunteer" && (
+                <>
+                  <Nav.Link as={Link} to="/volunteerHistory">Volunteer History</Nav.Link>
+                  <Nav.Link as={Link} to="/events">Events</Nav.Link>
+                </>
+              )}
+            </Nav>
+
+            {/* Right-aligned profile info */}
+            <div className="d-flex align-items-center" style={{ whiteSpace: "nowrap" }}>
+              <Navbar.Text className="me-3 mb-0">Signed in as {username}</Navbar.Text>
+              <Nav.Link as={Link} to="/userProfile">
+                <CgProfile size={25} />
+              </Nav.Link>
+              <Notifications notifications={notifications || []} />
+            </div>
+          </div>
         </Navbar.Collapse>
       </Container>
     </Navbar>
