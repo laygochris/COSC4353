@@ -13,21 +13,21 @@ const notificationsData = [
 
   {
     id: 1712345678901,
-    userIDs: ["67dca2c970c8666e6f4442ee", "67dca2c970c8666e6f4442f1"],
+    userIDs: ["6809beaca659f180fbf3d891", "6809beaca659f180fbf3d894"],
     message: "Your event application has been approved!",
     type: "success",
     targetAudience: "assigned"
   },
   {
     id: 1712345678902,
-    userIDs: ["67dca2c970c8666e6f4442ee"],
+    userIDs: ["6809beaca659f180fbf3d891"],
     message: "New volunteering event available!",
     type: "info",
     targetAudience: "assigned"
   },
   {
     id: 1712345678903,
-    userIDs: ["67dca2c970c8666e6f4442f1"],
+    userIDs: ["6809beaca659f180fbf3d894"],
     message: "Reminder: Your shift starts in 1 hour.",
     type: "warning",
     targetAudience: "assigned"
