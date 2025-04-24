@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { Container, Card, Form, Button, Row, Col, ListGroup, Spinner } from "react-bootstrap";
 import "./UserProfile.css";
@@ -15,15 +15,85 @@ const UserProfile = () => {
     preferences: [],
     availability: [],
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  const states = ["TX", "CA", "NY", "FL", "WA"].map((s) => ({ label: s, value: s }));
+  const states = [
+    { label: "Alabama", value: "AL" }, { label: "Alaska", value: "AK" }, { label: "Arizona", value: "AZ" },
+    { label: "Arkansas", value: "AR" }, { label: "California", value: "CA" }, { label: "Colorado", value: "CO" },
+    { label: "Connecticut", value: "CT" }, { label: "Delaware", value: "DE" }, { label: "Florida", value: "FL" },
+    { label: "Georgia", value: "GA" }, { label: "Hawaii", value: "HI" }, { label: "Idaho", value: "ID" },
+    { label: "Illinois", value: "IL" }, { label: "Indiana", value: "IN" }, { label: "Iowa", value: "IA" },
+    { label: "Kansas", value: "KS" }, { label: "Kentucky", value: "KY" }, { label: "Louisiana", value: "LA" },
+    { label: "Maine", value: "ME" }, { label: "Maryland", value: "MD" }, { label: "Massachusetts", value: "MA" },
+    { label: "Michigan", value: "MI" }, { label: "Minnesota", value: "MN" }, { label: "Mississippi", value: "MS" },
+    { label: "Missouri", value: "MO" }, { label: "Montana", value: "MT" }, { label: "Nebraska", value: "NE" },
+    { label: "Nevada", value: "NV" }, { label: "New Hampshire", value: "NH" }, { label: "New Jersey", value: "NJ" },
+    { label: "New Mexico", value: "NM" }, { label: "New York", value: "NY" }, { label: "North Carolina", value: "NC" },
+    { label: "North Dakota", value: "ND" }, { label: "Ohio", value: "OH" }, { label: "Oklahoma", value: "OK" },
+    { label: "Oregon", value: "OR" }, { label: "Pennsylvania", value: "PA" }, { label: "Rhode Island", value: "RI" },
+    { label: "South Carolina", value: "SC" }, { label: "South Dakota", value: "SD" }, { label: "Tennessee", value: "TN" },
+    { label: "Texas", value: "TX" }, { label: "Utah", value: "UT" }, { label: "Vermont", value: "VT" },
+    { label: "Virginia", value: "VA" }, { label: "Washington", value: "WA" }, { label: "West Virginia", value: "WV" },
+    { label: "Wisconsin", value: "WI" }, { label: "Wyoming", value: "WY" }
+  ];
+
   const skillsOptions = [
     { label: "Problem Solving", value: "Problem Solving" },
     { label: "Time Management", value: "Time Management" },
     { label: "Teamwork", value: "Teamwork" },
+    { label: "Leadership", value: "Leadership" },
+    { label: "Communication", value: "Communication" },
+    { label: "Organization", value: "Organization" },
+    { label: "Animal Care", value: "Animal Care" },
   ];
+
+  const preferenceOptions = [
+    { label: "Teaching", value: "Teaching" },
+    { label: "Disaster Relief", value: "Disaster Relief" },
+    { label: "Youth Mentoring", value: "Youth Mentoring" },
+    { label: "Elder Care", value: "Elder Care" },
+    { label: "Environmental Cleanup", value: "Environmental Cleanup" },
+    { label: "Food Distribution", value: "Food Distribution" },
+    { label: "Animal Rescue", value: "Animal Rescue" },
+    { label: "Community Outreach", value: "Community Outreach" },
+    { label: "Food Drive", value: "Food Drive" },
+  ];
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+      if (!token || !userId) return;
+
+      try {
+        const response = await fetch(`http://localhost:5001/api/user/profile/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) throw new Error("Failed to load user profile");
+        const data = await response.json();
+        setUserInfo({
+          fullName: data.fullName || "",
+          address1: data.address || "",
+          address2: data.address2 || "",
+          city: data.city || "",
+          state: data.state || "",
+          zip: data.zipcode || "",
+          skills: Array.isArray(data.skills) ? data.skills : [],
+          preferences: Array.isArray(data.preferences) ? data.preferences : [],
+          availability: Array.isArray(data.availability) ? data.availability : [],
+        });
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,7 +115,9 @@ const UserProfile = () => {
   };
 
   const handleDateChange = (e) => {
-    setUserInfo((prev) => ({ ...prev, availability: [...prev.availability, e.target.value] }));
+    const date = e.target.value;
+    if (userInfo.availability.includes(date)) return;
+    setUserInfo((prev) => ({ ...prev, availability: [...prev.availability, date] }));
   };
 
   const removeDate = (dateToRemove) => {
@@ -95,114 +167,76 @@ const UserProfile = () => {
     setIsSubmitting(false);
   };
 
+  if (loading) {
+    return (
+      <Container className="text-center py-5">
+        <Spinner animation="border" />
+        <p className="mt-2">Loading profile...</p>
+      </Container>
+    );
+  }
+
   return (
     <Container className="py-5">
       <Card className="shadow p-4">
         <h3 className="mb-4 fw-semibold">📝 Update Your Profile</h3>
         <Form onSubmit={handleSubmit}>
           <Row className="g-3">
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Full Name</Form.Label>
-                <Form.Control name="fullName" value={userInfo.fullName} onChange={handleChange} isInvalid={!!errors.fullName} />
-                <Form.Control.Feedback type="invalid">{errors.fullName}</Form.Control.Feedback>
-              </Form.Group>
-            </Col>
+            <Col md={6}><Form.Group><Form.Label>Full Name</Form.Label>
+              <Form.Control name="fullName" value={userInfo.fullName} onChange={handleChange} isInvalid={!!errors.fullName} />
+              <Form.Control.Feedback type="invalid">{errors.fullName}</Form.Control.Feedback>
+            </Form.Group></Col>
+            <Col md={6}><Form.Group><Form.Label>Zip Code</Form.Label>
+              <Form.Control name="zip" value={userInfo.zip} onChange={handleChange} isInvalid={!!errors.zip} />
+              <Form.Control.Feedback type="invalid">{errors.zip}</Form.Control.Feedback>
+            </Form.Group></Col>
+            <Col md={6}><Form.Group><Form.Label>Address 1</Form.Label>
+              <Form.Control name="address1" value={userInfo.address1} onChange={handleChange} isInvalid={!!errors.address1} />
+              <Form.Control.Feedback type="invalid">{errors.address1}</Form.Control.Feedback>
+            </Form.Group></Col>
+            <Col md={6}><Form.Group><Form.Label>Address 2 (optional)</Form.Label>
+              <Form.Control name="address2" value={userInfo.address2} onChange={handleChange} />
+            </Form.Group></Col>
+            <Col md={6}><Form.Group><Form.Label>City</Form.Label>
+              <Form.Control name="city" value={userInfo.city} onChange={handleChange} isInvalid={!!errors.city} />
+              <Form.Control.Feedback type="invalid">{errors.city}</Form.Control.Feedback>
+            </Form.Group></Col>
+            <Col md={6}><Form.Group><Form.Label>State</Form.Label>
+              <Form.Select name="state" value={userInfo.state} onChange={handleChange} isInvalid={!!errors.state}>
+                <option value="">Select state</option>
+                {states.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+              </Form.Select>
+              <Form.Control.Feedback type="invalid">{errors.state}</Form.Control.Feedback>
+            </Form.Group></Col>
 
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Zip Code</Form.Label>
-                <Form.Control name="zip" value={userInfo.zip} onChange={handleChange} isInvalid={!!errors.zip} />
-                <Form.Control.Feedback type="invalid">{errors.zip}</Form.Control.Feedback>
-              </Form.Group>
-            </Col>
+            <Col md={12}><Form.Group><Form.Label>Skills</Form.Label>
+              <Select isMulti options={skillsOptions}
+                value={skillsOptions.filter(opt => userInfo.skills.includes(opt.value))}
+                onChange={handleSkillsChange} classNamePrefix="react-select" />
+              {errors.skills && <div className="text-danger mt-1 small">{errors.skills}</div>}
+            </Form.Group></Col>
 
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Address 1</Form.Label>
-                <Form.Control name="address1" value={userInfo.address1} onChange={handleChange} isInvalid={!!errors.address1} />
-                <Form.Control.Feedback type="invalid">{errors.address1}</Form.Control.Feedback>
-              </Form.Group>
-            </Col>
+            <Col md={12}><Form.Group><Form.Label>Preferences</Form.Label>
+              <Select isMulti options={preferenceOptions}
+                value={preferenceOptions.filter(opt => userInfo.preferences.includes(opt.value))}
+                onChange={handlePreferencesChange} classNamePrefix="react-select" />
+            </Form.Group></Col>
 
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Address 2 (optional)</Form.Label>
-                <Form.Control name="address2" value={userInfo.address2} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>City</Form.Label>
-                <Form.Control name="city" value={userInfo.city} onChange={handleChange} isInvalid={!!errors.city} />
-                <Form.Control.Feedback type="invalid">{errors.city}</Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>State</Form.Label>
-                <Form.Select name="state" value={userInfo.state} onChange={handleChange} isInvalid={!!errors.state}>
-                  <option value="">Select state</option>
-                  {states.map((s) => (
-                    <option key={s.value} value={s.value}>{s.label}</option>
-                  ))}
-                </Form.Select>
-                <Form.Control.Feedback type="invalid">{errors.state}</Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-
-            <Col md={12}>
-              <Form.Group>
-                <Form.Label>Skills</Form.Label>
-                <Select
-                  isMulti
-                  options={skillsOptions}
-                  value={skillsOptions.filter((opt) => userInfo.skills.includes(opt.value))}
-                  onChange={handleSkillsChange}
-                  classNamePrefix="react-select"
-                />
-                {errors.skills && <div className="text-danger mt-1 small">{errors.skills}</div>}
-              </Form.Group>
-            </Col>
-
-            <Col md={12}>
-              <Form.Group>
-                <Form.Label>Preferred Skills</Form.Label>
-                <Select
-                  isMulti
-                  options={skillsOptions}
-                  value={skillsOptions.filter((opt) => userInfo.preferences.includes(opt.value))}
-                  onChange={handlePreferencesChange}
-                  classNamePrefix="react-select"
-                />
-              </Form.Group>
-            </Col>
-
-            <Col md={12}>
-              <Form.Group>
-                <Form.Label>Availability</Form.Label>
-                <Form.Control type="date" onChange={handleDateChange} isInvalid={!!errors.availability} />
-                <Form.Control.Feedback type="invalid">{errors.availability}</Form.Control.Feedback>
-                <ListGroup className="mt-2">
-                  {userInfo.availability.map((date, index) => (
-                    <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
-                      {date}
-                      <Button variant="outline-danger" size="sm" onClick={() => removeDate(date)}>✕</Button>
-                    </ListGroup.Item>
-                  ))}
-                </ListGroup>
-              </Form.Group>
-            </Col>
+            <Col md={12}><Form.Group><Form.Label>Availability</Form.Label>
+              <Form.Control type="date" onChange={handleDateChange} isInvalid={!!errors.availability} />
+              <Form.Control.Feedback type="invalid">{errors.availability}</Form.Control.Feedback>
+              <ListGroup className="mt-2">
+                {userInfo.availability.map((date, index) => (
+                  <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
+                    {date}
+                    <Button variant="outline-danger" size="sm" onClick={() => removeDate(date)}>✕</Button>
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            </Form.Group></Col>
           </Row>
 
-          <Button
-            type="submit"
-            className="w-100 mt-4"
-            style={{ backgroundColor: "#60993E", borderColor: "#60993E" }}
-            disabled={isSubmitting}
-          >
+          <Button type="submit" className="w-100 mt-4" style={{ backgroundColor: "#60993E", borderColor: "#60993E" }} disabled={isSubmitting}>
             {isSubmitting ? "Saving..." : "Save Profile"}
           </Button>
         </Form>

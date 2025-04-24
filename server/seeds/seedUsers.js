@@ -15,7 +15,7 @@ const usersData = [
     zipcode: "00001",
     skills: ["Sword Fighting", "Problem Solving"],
     preferences: ["Monster Hunting", "Treasure Hunting"],
-    availability: "Weekends"
+    availability: ["2025-04-30", "2025-05-01"]
   },
   {
     username: "alice",
@@ -29,7 +29,7 @@ const usersData = [
     zipcode: "77001",
     skills: ["Teamwork", "Organization"],
     preferences: ["Food Drive", "Community Outreach"],
-    availability: "Weekends"
+    availability: ""
   },
   {
     username: "bob",
@@ -43,7 +43,7 @@ const usersData = [
     zipcode: "78701",
     skills: ["Communication", "Leadership"],
     preferences: ["Teaching", "Disaster Relief"],
-    availability: "Weekdays"
+    availability: ["2025-04-30", "2025-05-01"]
   },
   {
     username: "chrislaygo",
@@ -57,7 +57,7 @@ const usersData = [
     zipcode: "75201",
     skills: ["Technical Skills", "Project Management"],
     preferences: ["Tech Volunteering", "STEM Education"],
-    availability: "Weekends"
+    availability: []
   },
   {
     username: "adammartinez",
@@ -71,7 +71,7 @@ const usersData = [
     zipcode: "78205",
     skills: ["Teamwork", "Community Engagement"],
     preferences: ["Food Distribution", "Shelter Assistance"],
-    availability: "Flexible"
+    availability: []
   },
   {
     username: "dylanleanord",
@@ -85,21 +85,7 @@ const usersData = [
     zipcode: "78702",
     skills: ["Public Speaking", "Leadership"],
     preferences: ["Youth Mentorship", "Public Advocacy"],
-    availability: "Evenings"
-  },
-  {
-    username: "annetteptran",
-    email: "annette@example.com",
-    password: "password",
-    userType: "volunteer",
-    fullName: "Annette Tran",
-    address: "321 Birch St",
-    city: "Houston",
-    state: "TX",
-    zipcode: "77002",
-    skills: ["Software Development", "Data Analysis"],
-    preferences: ["Tech Education", "Coding Bootcamps"],
-    availability: "Weekdays"
+    availability: []
   }
 ];
 

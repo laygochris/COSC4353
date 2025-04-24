@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
     zipcode: { type: String, default: '' },
     skills: { type: [String], default: [] },
     preferences: { type: [String], default: [] },
-    availability: { type: String, default: '' }
+    availability: { type: [String], default: [] }
 }, { timestamps: true });
 
 // Hash the password before saving
