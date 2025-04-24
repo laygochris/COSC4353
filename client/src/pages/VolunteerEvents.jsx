@@ -5,22 +5,51 @@ const VolunteerEvents = () => {
   const [events, setEvents] = useState([]);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [userSkills, setUserSkills] = useState([]);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     fetchEvents();
+    fetchCurrentVolunteer();
   }, []);
 
   const fetchEvents = async () => {
     try {
       const response = await fetch("http://localhost:5001/api/events");
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data = await response.json();
       setEvents(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching events:", error);
       setEvents([]);
+    }
+  };
+
+  const fetchCurrentVolunteer = async () => {
+    const token = localStorage.getItem("token");
+    const id = localStorage.getItem("userId");
+
+    if (!token || !id) {
+      console.warn("Missing token or user ID.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5001/api/user/profile/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch user profile");
+
+      const user = await response.json();
+      console.log("✅ Volunteer Profile:", user);
+
+      setUserId(user._id);
+      setUserSkills(user.skills || []);
+    } catch (error) {
+      console.error("Error fetching current volunteer:", error);
     }
   };
 
@@ -32,6 +61,36 @@ const VolunteerEvents = () => {
     setSelectedSkills((prev) =>
       prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
     );
+  };
+
+  const handleSignup = async (eventId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:5001/api/volunteers/events/${eventId}/match`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ volunteerId: userId }),
+      });
+
+      if (!response.ok) throw new Error("Signup failed");
+
+      alert("Successfully signed up!");
+      fetchEvents(); // Refresh the event list to reflect the signup
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("Signup failed");
+    }
+  };
+
+  const canSignup = (event) => {
+    const hasMatchingSkill = event.requiredSkills?.some((skill) =>
+      userSkills.includes(skill)
+    );
+    const alreadySignedUp = (event.assignedVolunteers || []).includes(userId);
+    return hasMatchingSkill && !alreadySignedUp;
   };
 
   const filteredEvents =
@@ -76,44 +135,55 @@ const VolunteerEvents = () => {
       <Row className="justify-content-center">
         {filteredEvents.length > 0 ? (
           filteredEvents.map((event) => (
-            event && (
-              <Col md={6} key={event._id} className="mb-3">
-                <Card>
-                  <Card.Body>
-                    <Card.Title>{event.name}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">
-                      {event.location}
-                    </Card.Subtitle>
-                    <Card.Text>
-                      <strong>Date:</strong> {event.date.slice(0, 10)}
-                    </Card.Text>
-                    <div className="mb-2">
-                      {event.requiredSkills &&
-                        Array.isArray(event.requiredSkills) &&
-                        event.requiredSkills.map((skill) => (
-                          <Badge bg="secondary" key={skill} className="me-1">
-                            {skill}
-                          </Badge>
-                        ))}
-                    </div>
-                    <Button
-                      style={{
-                        backgroundColor: "#2C365e",
-                        borderColor: "#8A95A5",
-                        color: "white",
-                      }}
-                      className="w-100"
-                      onClick={() => handleEventClick(event)}
-                    >
-                      {selectedEvent?._id === event._id ? "Hide Details" : "View Details"}
-                    </Button>
-                    {selectedEvent?._id === event._id && (
+            <Col md={6} key={event._id} className="mb-3">
+              <Card>
+                <Card.Body>
+                  <Card.Title>{event.name}</Card.Title>
+                  <Card.Subtitle className="mb-2 text-muted">{event.location}</Card.Subtitle>
+                  <Card.Text>
+                    <strong>Date:</strong> {event.date.slice(0, 10)}
+                  </Card.Text>
+                  <div className="mb-2">
+                    {event.requiredSkills?.map((skill) => (
+                      <Badge bg="secondary" key={skill} className="me-1">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                  <Button
+                    style={{
+                      backgroundColor: "#2C365e",
+                      borderColor: "#8A95A5",
+                      color: "white",
+                    }}
+                    className="w-100"
+                    onClick={() => handleEventClick(event)}
+                  >
+                    {selectedEvent?._id === event._id ? "Hide Details" : "View Details"}
+                  </Button>
+                  {selectedEvent?._id === event._id && (
+                    <>
                       <Card.Text className="mt-2">{event.description}</Card.Text>
-                    )}
-                  </Card.Body>
-                </Card>
-              </Col>
-            )
+                      <Button
+                        className="w-100 mt-2"
+                        style={{
+                          backgroundColor: canSignup(event) ? "#60993E" : "#A9A9A9",
+                          borderColor: "#8A95A5",
+                          color: "white",
+                          cursor: canSignup(event) ? "pointer" : "not-allowed",
+                        }}
+                        disabled={!canSignup(event)}
+                        onClick={() => handleSignup(event._id)}
+                      >
+                        {event.assignedVolunteers?.includes(userId)
+                          ? "Already Signed Up"
+                          : "Sign Up"}
+                      </Button>
+                    </>
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
           ))
         ) : (
           <p className="text-center">No events found.</p>
