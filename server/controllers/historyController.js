@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const Event = require("../models/events"); // ✅ Matches provided events.js
-const User = require("../models/users"); // ✅ Matches provided users.js
+const Event = require("../models/events"); 
+const User = require("../models/users"); 
 
 // Get all events (for debugging)
 exports.getAllEvents = async (req, res) => {
@@ -16,7 +16,7 @@ exports.getAllEvents = async (req, res) => {
 // Get volunteer history by ObjectId
 exports.getVolunteerHistory = async (req, res) => {
     try {
-        const { userId } = req.params; // Get ObjectId from route parameter
+        const { userId } = req.params; 
 
         if (!mongoose.Types.ObjectId.isValid(userId)) {
             return res.status(400).json({ message: "Invalid ObjectId format" });

@@ -6,7 +6,7 @@ const {
     matchVolunteersToEvent,
     createVolunteer,
     getVolunteerById,
-    matchVolunteerToEvent, 
+    assignVolunteerToEvent, 
 } = require("../controllers/volunteerController");
 
 // Routes
@@ -15,6 +15,6 @@ router.get("/volunteer/email", getVolunteerByEmail);
 router.get("/volunteer/:volunteerId", getVolunteerById);
 router.get("/match/:volunteerId", matchVolunteersToEvent);
 router.post("/volunteer", createVolunteer);
-router.post("/events/:eventId/match", matchVolunteerToEvent);
+router.post("/volunteers/events/:eventId/assign", assignVolunteerToEvent);
 
 module.exports = router;

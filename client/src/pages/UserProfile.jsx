@@ -16,7 +16,6 @@ const UserProfile = () => {
   const [userInfo, setUserInfo] = useState({
     fullName: "",
     address1: "",
-    address2: "",
     city: "",
     state: "",
     zipcode: "",
@@ -30,11 +29,23 @@ const UserProfile = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const states = [
-    { label: "Texas", value: "TX" },
-    { label: "California", value: "CA" },
-    { label: "New York", value: "NY" },
-    { label: "Florida", value: "FL" },
-    // Add more states as needed...
+    { label: "Alabama", value: "AL" }, { label: "Alaska", value: "AK" }, { label: "Arizona", value: "AZ" },
+    { label: "Arkansas", value: "AR" }, { label: "California", value: "CA" }, { label: "Colorado", value: "CO" },
+    { label: "Connecticut", value: "CT" }, { label: "Delaware", value: "DE" }, { label: "Florida", value: "FL" },
+    { label: "Georgia", value: "GA" }, { label: "Hawaii", value: "HI" }, { label: "Idaho", value: "ID" },
+    { label: "Illinois", value: "IL" }, { label: "Indiana", value: "IN" }, { label: "Iowa", value: "IA" },
+    { label: "Kansas", value: "KS" }, { label: "Kentucky", value: "KY" }, { label: "Louisiana", value: "LA" },
+    { label: "Maine", value: "ME" }, { label: "Maryland", value: "MD" }, { label: "Massachusetts", value: "MA" },
+    { label: "Michigan", value: "MI" }, { label: "Minnesota", value: "MN" }, { label: "Mississippi", value: "MS" },
+    { label: "Missouri", value: "MO" }, { label: "Montana", value: "MT" }, { label: "Nebraska", value: "NE" },
+    { label: "Nevada", value: "NV" }, { label: "New Hampshire", value: "NH" }, { label: "New Jersey", value: "NJ" },
+    { label: "New Mexico", value: "NM" }, { label: "New York", value: "NY" }, { label: "North Carolina", value: "NC" },
+    { label: "North Dakota", value: "ND" }, { label: "Ohio", value: "OH" }, { label: "Oklahoma", value: "OK" },
+    { label: "Oregon", value: "OR" }, { label: "Pennsylvania", value: "PA" }, { label: "Rhode Island", value: "RI" },
+    { label: "South Carolina", value: "SC" }, { label: "South Dakota", value: "SD" }, { label: "Tennessee", value: "TN" },
+    { label: "Texas", value: "TX" }, { label: "Utah", value: "UT" }, { label: "Vermont", value: "VT" },
+    { label: "Virginia", value: "VA" }, { label: "Washington", value: "WA" }, { label: "West Virginia", value: "WV" },
+    { label: "Wisconsin", value: "WI" }, { label: "Wyoming", value: "WY" }
   ];
 
   const skillsOptions = [
@@ -79,22 +90,17 @@ const UserProfile = () => {
 
         if (!response.ok) throw new Error("Failed to load user profile");
 
-        const user = await response.json(); // No `.profile` key
+        const user = await response.json();
 
         setUserInfo({
           fullName: user.fullName || "",
           address1: user.address || "",
-          address2: "",
           city: user.city || "",
           state: user.state || "",
           zipcode: user.zipcode || "",
           skills: Array.isArray(user.skills) ? user.skills : [],
-          preferences: Array.isArray(user.preferences)
-            ? user.preferences
-            : [],
-          availability: Array.isArray(user.availability)
-            ? user.availability
-            : [],
+          preferences: Array.isArray(user.preferences) ? user.preferences : [],
+          availability: Array.isArray(user.availability) ? user.availability : [],
         });
       } catch (error) {
         console.error("❌ Error fetching user profile:", error);
@@ -121,9 +127,7 @@ const UserProfile = () => {
   const handlePreferencesChange = (selectedOptions) => {
     setUserInfo((prev) => ({
       ...prev,
-      preferences: selectedOptions
-        ? selectedOptions.map((opt) => opt.value)
-        : [],
+      preferences: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
     }));
   };
 
@@ -171,17 +175,20 @@ const UserProfile = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(
-        `http://localhost:5001/api/user/profile/${storedUserId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(userInfo),
-        }
-      );
+        const response = await fetch(
+            `http://localhost:5001/api/user-profile/${storedUserId}`, 
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                ...userInfo,
+                address: userInfo.address1,
+              }),
+            }
+          );          
 
       if (!response.ok) throw new Error("Update failed");
 
@@ -239,7 +246,7 @@ const UserProfile = () => {
             </Col>
             <Col md={6}>
               <Form.Group>
-                <Form.Label>Address 1</Form.Label>
+                <Form.Label>Address</Form.Label>
                 <Form.Control
                   name="address1"
                   value={userInfo.address1}
@@ -249,16 +256,6 @@ const UserProfile = () => {
                 <Form.Control.Feedback type="invalid">
                   {errors.address1}
                 </Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Address 2 (optional)</Form.Label>
-                <Form.Control
-                  name="address2"
-                  value={userInfo.address2}
-                  onChange={handleChange}
-                />
               </Form.Group>
             </Col>
             <Col md={6}>

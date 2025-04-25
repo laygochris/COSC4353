@@ -129,9 +129,15 @@ const VolunteerMatching = ({ userRole }) => {
           </Form.Control>
         </Form.Group>
 
-        {selectedVolunteer?.matchedEvents?.length > 0 ? (
+        {selectedVolunteer?.matchedEvents?.filter(event => event.status?.toLowerCase() !== "completed")?.length > 0 ? (
           <Row className="justify-content-center">
-            {selectedVolunteer.matchedEvents.map((event, index) => {
+            {selectedVolunteer.matchedEvents
+              .filter(
+                (event) =>
+                  event.status?.toLowerCase() !== "completed" &&
+                  event.status?.toLowerCase() !== "canceled"
+              )
+              .map((event, index) => {
               const isAlreadyMatched = event.assignedVolunteers?.includes(selectedVolunteerId);
 
               return (

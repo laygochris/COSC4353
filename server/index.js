@@ -67,7 +67,7 @@ const userRoutes = require("./routes/userRoutes");
 const userProfileRoutes = require("./routes/userProfileRoutes");
 const historyRoutes = require("./routes/historyRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
-const reportingRoutes = require("./routes/reportingRoutes"); // <-- Reporting routes added
+const reportingRoutes = require("./routes/reportingRoutes");
 
 // Mount the routes
 app.use('/api', authRoutes);

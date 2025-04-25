@@ -18,7 +18,13 @@ const VolunteerEvents = () => {
       const response = await fetch("http://localhost:5001/api/events");
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data = await response.json();
-      setEvents(Array.isArray(data) ? data : []);
+      const filtered = Array.isArray(data)
+  ? data.filter(e =>
+      e.status?.toLowerCase() !== "completed" &&
+      e.status?.toLowerCase() !== "canceled"
+    )
+  : [];
+      setEvents(filtered);
     } catch (error) {
       console.error("Error fetching events:", error);
       setEvents([]);
@@ -66,7 +72,7 @@ const VolunteerEvents = () => {
   const handleSignup = async (eventId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:5001/api/volunteers/events/${eventId}/match`, {
+      const response = await fetch(`http://localhost:5001/api/volunteers/events/${selectedEvent._id}/assign`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +84,7 @@ const VolunteerEvents = () => {
       if (!response.ok) throw new Error("Signup failed");
 
       alert("Successfully signed up!");
-      fetchEvents(); // Refresh the event list to reflect the signup
+      fetchEvents();
     } catch (error) {
       console.error("Signup error:", error);
       alert("Signup failed");
@@ -91,6 +97,19 @@ const VolunteerEvents = () => {
     );
     const alreadySignedUp = (event.assignedVolunteers || []).includes(userId);
     return hasMatchingSkill && !alreadySignedUp;
+  };
+
+  const getUrgencyColor = (urgency) => {
+    switch ((urgency || "").toLowerCase()) {
+      case "high":
+        return "#931621";
+      case "medium":
+        return "#D9A404";
+      case "low":
+        return "#60993E";
+      default:
+        return "#4b0e0e";
+    }
   };
 
   const filteredEvents =
@@ -149,6 +168,21 @@ const VolunteerEvents = () => {
                         {skill}
                       </Badge>
                     ))}
+                  </div>
+                  <div className="mb-2">
+                    <strong>Urgency:</strong>{" "}
+                    <span
+                      className="badge"
+                      style={{
+                        backgroundColor: getUrgencyColor(event.urgency),
+                        color: "white",
+                        padding: "0.35em 0.65em",
+                        fontSize: "0.75em",
+                        borderRadius: "0.25rem",
+                      }}
+                    >
+                      {event.urgency?.charAt(0).toUpperCase() + event.urgency?.slice(1).toLowerCase()}
+                    </span>
                   </div>
                   <Button
                     style={{

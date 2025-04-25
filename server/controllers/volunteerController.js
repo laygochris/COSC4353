@@ -112,7 +112,7 @@ exports.createVolunteer = async (req, res) => {
 };
 
 // Match a volunteer to a specific event
-exports.matchVolunteerToEvent = async (req, res) => {
+exports.assignVolunteerToEvent = async (req, res) => {
     const { eventId } = req.params;
     const { volunteerId } = req.body;
   

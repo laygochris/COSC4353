@@ -17,15 +17,33 @@ const Events = () => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const data = await response.json();
-      setEvents(Array.isArray(data) ? data : []);
+      const upcomingOnly = Array.isArray(data)
+      ? data.filter(e =>
+        e.status?.toLowerCase() !== "completed" &&
+        e.status?.toLowerCase() !== "canceled"
+      )
+    : [];
+      setEvents(upcomingOnly);
     } catch (error) {
       console.error("Error fetching events:", error);
       setEvents([]);
     }
   };
 
+  const getUrgencyColor = (urgency) => {
+    switch ((urgency || "").toLowerCase()) {
+      case "high":
+        return "#931621";
+      case "medium":
+        return "#D9A404";
+      case "low":
+        return "#60993E";
+      default:
+        return "#4b0e0e";
+    }
+  };
+
   const handleEventClick = (event) => {
-    // Toggle event details based on _id
     setSelectedEvent(selectedEvent?._id === event._id ? null : event);
   };
 
@@ -35,27 +53,24 @@ const Events = () => {
     );
   };
 
-  // Remove event completely
-const removeEvent = async (eventId) => {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await fetch(`http://localhost:5001/api/events/${eventId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Failed to delete event");
+  const removeEvent = async (eventId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:5001/api/events/${eventId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete event");
+      }
+      setEvents((prevEvents) => prevEvents.filter((event) => event._id !== eventId));
+    } catch (error) {
+      console.error("Error deleting event:", error);
     }
-    // Remove the event from the local state after successful deletion
-    setEvents((prevEvents) => prevEvents.filter((event) => event._id !== eventId));
-  } catch (error) {
-    console.error("Error deleting event:", error);
-  }
-};
-
+  };
 
   const filteredEvents =
     selectedSkills.length > 0
@@ -129,6 +144,21 @@ const removeEvent = async (eventId) => {
                               {skill}
                             </Badge>
                           ))}
+                      </div>
+                      <div className="mb-2">
+                        <strong>Urgency:</strong>{" "}
+                        <span
+                          className="badge"
+                          style={{
+                            backgroundColor: getUrgencyColor(event.urgency),
+                            color: "white",
+                            padding: "0.35em 0.65em",
+                            fontSize: "0.75em",
+                            borderRadius: "0.25rem",
+                          }}
+                        >
+                          {event.urgency?.charAt(0).toUpperCase() + event.urgency?.slice(1).toLowerCase()}
+                        </span>
                       </div>
                       <Button
                         style={{
