@@ -19,11 +19,11 @@ const VolunteerEvents = () => {
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data = await response.json();
       const filtered = Array.isArray(data)
-  ? data.filter(e =>
-      e.status?.toLowerCase() !== "completed" &&
-      e.status?.toLowerCase() !== "canceled"
-    )
-  : [];
+        ? data.filter(e =>
+            e.status?.toLowerCase() !== "completed" &&
+            e.status?.toLowerCase() !== "canceled"
+          )
+        : [];
       setEvents(filtered);
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -49,8 +49,8 @@ const VolunteerEvents = () => {
 
       if (!response.ok) throw new Error("Failed to fetch user profile");
 
-      const user = await response.json();
-      console.log("✅ Volunteer Profile:", user);
+      const data = await response.json();
+      const user = data.profile;
 
       setUserId(user._id);
       setUserSkills(user.skills || []);
@@ -72,13 +72,18 @@ const VolunteerEvents = () => {
   const handleSignup = async (eventId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:5001/api/volunteers/events/${selectedEvent._id}/assign`, {
+      console.log("📤 Signing up with:", { volunteerId: userId, eventId });
+
+      const response = await fetch(`http://localhost:5001/api/events/assign`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ volunteerId: userId }),
+        body: JSON.stringify({
+          volunteerId: userId,
+          eventId: eventId,
+        }),
       });
 
       if (!response.ok) throw new Error("Signup failed");
