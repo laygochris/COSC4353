@@ -8,6 +8,7 @@ const User = require('./models/users');
 const http = require("http");
 const socketIo = require("socket.io");
 const watchNewUser = require("./data/watchers/userWatcher");
+const verifyToken = require('./middleware/verifyToken');
 
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -82,6 +83,16 @@ app.use("/api/reports", reportingRoutes);
 
 app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from the backend!' });
+});
+
+app.get('/api/debug-token', verifyToken, (req, res) => {
+  res.json({ user: req.user });
+});
+
+app.get('/api/debug-token', verifyToken, (req, res) => {
+  console.log("✅ verifyToken passed!");
+  console.log("📦 req.user:", req.user);
+  res.json({ user: req.user });
 });
 
 server.listen(PORT, () => {

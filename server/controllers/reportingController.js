@@ -32,7 +32,7 @@ exports.generateCombinedReport = async (req, res) => {
       })),
     };
 
-    // output format
+    // Output format
     const format = req.query.format ? req.query.format.toLowerCase() : "pdf";
 
     if (format === "csv") {
@@ -63,7 +63,7 @@ exports.generateCombinedReport = async (req, res) => {
       doc.fontSize(16).text("Combined Report", { align: "center" });
       doc.moveDown();
 
-      // volunteer section
+      // Volunteer section
       doc.fontSize(14).text("Volunteers and Participation History");
       reportData.volunteers.forEach((vol) => {
         doc.fontSize(12).text(`Name: ${vol.name}`);
@@ -72,7 +72,7 @@ exports.generateCombinedReport = async (req, res) => {
         doc.moveDown();
       });
 
-      // event section
+      // Event section
       doc.addPage();
       doc.fontSize(14).text("Event Details and Volunteer Assignments");
       reportData.events.forEach((event) => {

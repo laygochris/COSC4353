@@ -22,7 +22,7 @@ exports.getVolunteerHistory = async (req, res) => {
             return res.status(400).json({ message: "Invalid ObjectId format" });
         }
 
-        console.log(`📌 Fetching volunteer history for ObjectId: ${userId}`);
+        console.log(`Fetching volunteer history for ObjectId: ${userId}`);
 
         // Find all events where this user has been assigned
         const userEvents = await Event.find({ assignedVolunteers: userId });
@@ -55,7 +55,7 @@ exports.assignVolunteerToEvent = async (req, res) => {
         if (!event.assignedVolunteers.includes(volunteerId)) {
             event.assignedVolunteers.push(volunteerId);
             await event.save();
-            console.log(`✅ Volunteer ${volunteerId} assigned to event ${eventId}`);
+            console.log(`Volunteer ${volunteerId} assigned to event ${eventId}`);
         } else {
             console.warn(`⚠️ Volunteer ${volunteerId} is already assigned to event ${eventId}`);
         }
@@ -84,7 +84,7 @@ exports.removeVolunteerFromEvent = async (req, res) => {
         event.assignedVolunteers = event.assignedVolunteers.filter(id => id.toString() !== volunteerId);
         await event.save();
 
-        console.log(`✅ Volunteer ${volunteerId} removed from event ${eventId}`);
+        console.log(`Volunteer ${volunteerId} removed from event ${eventId}`);
         res.json({ message: `Volunteer ${volunteerId} removed from event ${eventId}`, event });
     } catch (error) {
         console.error("❌ Error removing volunteer from event:", error);

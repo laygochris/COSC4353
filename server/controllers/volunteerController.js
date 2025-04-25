@@ -116,7 +116,7 @@ exports.assignVolunteerToEvent = async (req, res) => {
     const { eventId } = req.params;
     const { volunteerId } = req.body;
   
-    console.log("🚀 Match request received:", { eventId, volunteerId }); // ✅ add this
+    console.log("🚀 Match request received:", { eventId, volunteerId }); 
   
     if (!mongoose.Types.ObjectId.isValid(eventId) || !mongoose.Types.ObjectId.isValid(volunteerId)) {
       return res.status(400).json({ message: "Invalid eventId or volunteerId format" });
